@@ -93,3 +93,7 @@ class AtomsBackend:
     @property
     def client_bridge(self) -> 'ClientBridge':
         return self.__client_bridge
+    
+    @property
+    def instance(self) -> 'AtomsInstance':
+        return self.__instance
