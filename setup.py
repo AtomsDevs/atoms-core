@@ -11,6 +11,6 @@ setup(
     description='Atoms Core allows you to create and manage your own chroots'
                 'and podman containers.',
     install_requires=[
-        'orjson'
+        'orjson',
     ]
 )

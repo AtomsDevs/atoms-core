@@ -21,6 +21,7 @@ import orjson
 import tempfile
 import datetime
 import importlib
+import subprocess
 
 from atoms_core.exceptions.atom import AtomsWrongAtomData
 from atoms_core.exceptions.download import AtomsHashMissmatchError
@@ -243,7 +244,20 @@ done
         if self.is_podman_container:
             self.__podman_wrapper.destroy_container(self.podman_container_id)
             return
-        shutil.rmtree(self.path)
+        
+        # NOTE: might not be the best way to do this but shutil raises an 
+        #       error if has no permissions to remove the directory since
+        #       the homedir is mounted in some way (not unmoutable).
+        subprocess.run(["rm", "-rf", self.path])        
+    
+    def kill(self):
+        if self.is_podman_container:
+            self.__podman_wrapper.stop_container(self.podman_container_id)
+            return
+        
+        pids = ProcUtils.find_proc_by_cmdline(self.relative_path)
+        for pid in pids:
+            pid.kill()
     
     def rename(self, new_name: str):
         if self.is_podman_container:
