@@ -248,6 +248,9 @@ done
         # NOTE: might not be the best way to do this but shutil raises an 
         #       error if has no permissions to remove the directory since
         #       the homedir is mounted in some way (not unmoutable).
+        #       A better way would be stop the running proot process and
+        #       then remove the directory, but since Atoms has a no track
+        #       of the proot process, this is the best we can do for now.
         subprocess.run(["rm", "-rf", self.path])        
     
     def kill(self):
