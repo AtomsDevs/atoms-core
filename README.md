@@ -3,6 +3,8 @@ Atoms Core allows you to create and manage your own chroots and podman container
 
 This is meant to be used by Atoms clients (e.g. [Atoms GTK](https://github.com/AtomsDevs/Atoms)).
 
+[![CodeFactor](https://www.codefactor.io/repository/github/atomsdevs/atoms-core/badge)](https://www.codefactor.io/repository/github/atomsdevs/atoms-core)
+
 ## Dependencies
 Atoms COre only need the `orjson` python package.
 
