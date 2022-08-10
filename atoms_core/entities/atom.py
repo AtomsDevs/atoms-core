@@ -251,7 +251,8 @@ done
         #       A better way would be stop the running proot process and
         #       then remove the directory, but since Atoms has a no track
         #       of the proot process, this is the best we can do for now.
-        subprocess.run(["rm", "-rf", self.path])        
+        binary_path = shutil.which("rm")
+        subprocess.run([binary_path, "-rf", self.path])        
     
     def kill(self):
         if self.is_podman_container:
