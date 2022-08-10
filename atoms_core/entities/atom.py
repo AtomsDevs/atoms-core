@@ -18,18 +18,19 @@ import os
 import uuid
 import shutil
 import orjson
+import tempfile
 import datetime
 import importlib
 
-from atoms.backend.exceptions.atom import AtomsWrongAtomData
-from atoms.backend.exceptions.download import AtomsHashMissmatchError
-from atoms.backend.exceptions.image import AtomsFailToDownloadImage
-from atoms.backend.exceptions.distribution import AtomsUnreachableRemote
-from atoms.backend.utils.paths import AtomsPathsUtils
-from atoms.backend.utils.image import AtomsImageUtils
-from atoms.backend.utils.distribution import AtomsDistributionsUtils
-from atoms.backend.wrappers.proot import ProotWrapper
-from atoms.backend.wrappers.podman import PodmanWrapper
+from atoms_core.exceptions.atom import AtomsWrongAtomData
+from atoms_core.exceptions.download import AtomsHashMissmatchError
+from atoms_core.exceptions.image import AtomsFailToDownloadImage
+from atoms_core.exceptions.distribution import AtomsUnreachableRemote
+from atoms_core.utils.paths import AtomsPathsUtils
+from atoms_core.utils.image import AtomsImageUtils
+from atoms_core.utils.distribution import AtomsDistributionsUtils
+from atoms_core.wrappers.proot import ProotWrapper
+from atoms_core.wrappers.podman import PodmanWrapper
 
 
 class Atom:
@@ -208,7 +209,7 @@ class Atom:
                 command, environment)
 
         if track_exit:
-            command = ["sh", self.__get_launcher_path()] + command
+            command = ["sh", self.__get_launcher_script()] + command
 
         return command, environment, working_directory 
     
@@ -226,13 +227,17 @@ class Atom:
         _command = self.__podman_wrapper.get_podman_command_for_container(self.podman_container_id, command)
         return _command, environment, self.root_path
     
-    def __get_launcher_path(self) -> str:
-        return os.path.join(
-            os.path.dirname(
-                importlib.util.find_spec("atoms.backend.wrappers").origin
-            ),
-            "launcher.sh"
-        )
+    def __get_launcher_script(self) -> str:
+        script = """#!/bin/bash
+while true; do
+    clear
+    $@
+    read -n 1 -s -r -p "Press any [Key] to restart the Atom Console…";
+done
+"""
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+            f.write(script)
+            return f.name
 
     def destroy(self):
         if self.is_podman_container:

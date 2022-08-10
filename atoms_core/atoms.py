@@ -16,12 +16,12 @@
 
 import os
 
-from atoms.backend.entities.config import AtomsConfig
-from atoms.backend.entities.atom import Atom
-from atoms.backend.entities.instance import AtomsInstance
-from atoms.backend.utils.image import AtomsImageUtils
-from atoms.backend.wrappers.client_bridge import ClientBridge
-from atoms.backend.wrappers.podman import PodmanWrapper
+from atoms_core.entities.config import AtomsConfig
+from atoms_core.entities.atom import Atom
+from atoms_core.entities.instance import AtomsInstance
+from atoms_core.utils.image import AtomsImageUtils
+from atoms_core.wrappers.client_bridge import ClientBridge
+from atoms_core.wrappers.podman import PodmanWrapper
 
 
 class AtomsBackend:

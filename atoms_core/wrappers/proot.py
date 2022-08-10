@@ -18,7 +18,7 @@ import os
 import shutil
 import subprocess
 
-from atoms.backend.exceptions.common import AtomsNoBinaryFound
+from atoms_core.exceptions.common import AtomsNoBinaryFound
 
 
 class ProotWrapper:

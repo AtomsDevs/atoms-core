@@ -19,9 +19,9 @@ import time
 import logging
 import requests
 
-from atoms.backend.utils.file import FileUtils
-from atoms.backend.utils.hash import HashUtils
-from atoms.backend.exceptions.download import AtomsHashMissmatchError
+from atoms_core.utils.file import FileUtils
+from atoms_core.utils.hash import HashUtils
+from atoms_core.exceptions.download import AtomsHashMissmatchError
 
 
 logger = logging.getLogger("atoms.download")

@@ -18,10 +18,10 @@ import os
 import time
 import requests
 
-from atoms.backend.utils.file import FileUtils
-from atoms.backend.utils.download import DownloadUtils
-from atoms.backend.entities.image import AtomImage
-from atoms.backend.exceptions.image import AtomsFailToDownloadImage
+from atoms_core.utils.file import FileUtils
+from atoms_core.utils.download import DownloadUtils
+from atoms_core.entities.image import AtomImage
+from atoms_core.exceptions.image import AtomsFailToDownloadImage
 
 
 class AtomsImageUtils:

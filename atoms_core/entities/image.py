@@ -18,8 +18,8 @@ import os
 import shutil
 import tarfile
 
-from atoms.backend.utils.file import FileUtils
-from atoms.backend.exceptions.image import AtomsImageMissingRoot
+from atoms_core.utils.file import FileUtils
+from atoms_core.exceptions.image import AtomsImageMissingRoot
 
 
 class AtomImage:

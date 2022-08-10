@@ -1,10 +1,10 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='Atoms Core',
     version='0.1',
-    packages=['atoms-core'],
-    url='https://github.com/mirkobrombin/atoms-core',
+    packages=find_packages(),
+    url='https://github.com/AtomsDevs/atoms-core',
     license='MIT',
     author='Mirko Brombin',
     author_email='send@mirko.pm',

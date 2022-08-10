@@ -17,8 +17,8 @@
 import os
 import orjson
 
-from atoms.backend.params.paths import AtomsPaths
-from atoms.backend.exceptions.config import AtomsCantMakeAtomsPath, AtomsConfigKeyNotFound
+from atoms_core.params.paths import AtomsPaths
+from atoms_core.exceptions.config import AtomsCantMakeAtomsPath, AtomsConfigKeyNotFound
 
 
 class AtomsConfig:

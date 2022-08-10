@@ -20,7 +20,7 @@ import re
 import requests
 import shlex
 
-from atoms.backend.exceptions.distribution import AtomsUnreachableRemote
+from atoms_core.exceptions.distribution import AtomsUnreachableRemote
 
 
 class AtomDistribution:

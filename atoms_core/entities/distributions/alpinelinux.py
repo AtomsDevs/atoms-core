@@ -1,4 +1,4 @@
-from atoms.backend.entities.distribution import AtomDistribution
+from atoms_core.entities.distribution import AtomDistribution
 
 
 class AlpineLinux(AtomDistribution):

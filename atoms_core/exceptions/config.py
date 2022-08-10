@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from atoms.backend.exceptions.exception import AtomsException
+from atoms_core.exceptions.exception import AtomsException
 
 
 class AtomsCantMakeAtomsPath(AtomsException):
