@@ -36,7 +36,7 @@ class AtomsBackend:
         self.__instance = AtomsInstance(self.__config, client_bridge)
         self.__podman_support = podman_support
         self.__atoms = self.__list_atoms()
-        
+
     def __list_atoms(self) -> dict:
         atoms = {}
         for atom in os.listdir(self.__config.atoms_path):
@@ -56,21 +56,21 @@ class AtomsBackend:
                 self.__instance, info["creation_date"], info["names"], info["image"], container_id
             )
         return atoms
-    
+
     def request_new_atom(
         self,
-        name: str, 
-        distribution: 'AtomDistribution', 
-        architecture: str, 
-        release: str, 
-        download_fn: callable=None,
+        name: str,
+        distribution: 'AtomDistribution',
+        architecture: str,
+        release: str,
+        download_fn: callable = None,
         config_fn: callable = None,
         unpack_fn: callable = None,
         finalizing_fn: callable = None,
         error_fn: callable = None
     ):
         return Atom.new(
-            self.__instance, name, distribution, architecture, release, 
+            self.__instance, name, distribution, architecture, release,
             download_fn, config_fn, unpack_fn, finalizing_fn, error_fn
         )
 
@@ -81,11 +81,11 @@ class AtomsBackend:
     @property
     def has_atoms(self) -> bool:
         return len(self.__atoms) > 0
-    
+
     @property
     def local_images(self) -> list:
         return AtomsImageUtils.get_image_list(self.__config)
-    
+
     @property
     def has_podman_support(self) -> bool:
         return PodmanWrapper().is_supported
@@ -93,7 +93,7 @@ class AtomsBackend:
     @property
     def client_bridge(self) -> 'ClientBridge':
         return self.__client_bridge
-    
+
     @property
     def instance(self) -> 'AtomsInstance':
         return self.__instance

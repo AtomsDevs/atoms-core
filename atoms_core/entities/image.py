@@ -61,11 +61,11 @@ class AtomImage:
 
     def destroy(self):
         os.remove(self.path)
-        
+
     @property
     def size(self):
         return os.path.getsize(self.path)
-    
+
     @property
     def human_size(self):
         return FileUtils.get_human_size(self.size)

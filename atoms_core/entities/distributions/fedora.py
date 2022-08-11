@@ -4,7 +4,7 @@ from atoms_core.entities.distribution import AtomDistribution
 class Fedora(AtomDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="fedora", 
+            distribution_id="fedora",
             name="Fedora",
             logo="fedora-symbolic",
             releases=["36"],
@@ -15,6 +15,6 @@ class Fedora(AtomDistribution):
             root="",
             container_image_name="fedora"
         )
-    
+
     def get_remote_hash(self, _, release: str) -> str:
         return self.remote_hash_structure.format(release)

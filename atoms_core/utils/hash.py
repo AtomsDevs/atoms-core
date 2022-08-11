@@ -19,7 +19,7 @@ import hashlib
 
 
 class HashUtils:
-    
+
     @staticmethod
     def get_hash(file_path: str, hash_type: str) -> str:
         """

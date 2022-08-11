@@ -42,15 +42,15 @@ class Atom:
     relative_path: str
 
     def __init__(
-        self, 
-        instance: "AtomsInstance", 
-        name: str, 
-        distribution_id: str=None, 
-        relative_path: str=None,
-        creation_date: str=None, 
-        update_date: str=None,
-        podman_container_id: str=None,
-        podman_container_image: str=None
+        self,
+        instance: "AtomsInstance",
+        name: str,
+        distribution_id: str = None,
+        relative_path: str = None,
+        creation_date: str = None,
+        update_date: str = None,
+        podman_container_id: str = None,
+        podman_container_image: str = None
     ):
         if update_date is None and podman_container_id:
             update_date = datetime.datetime.now().isoformat()
@@ -88,21 +88,22 @@ class Atom:
             data['creationDate'],
             data['updateDate']
         )
-    
+
     @classmethod
     def load(cls, instance: "AtomsInstance", relative_path: str) -> "Atom":
-        path = os.path.join(AtomsPathsUtils.get_atom_path(instance.config, relative_path), "atom.json")
+        path = os.path.join(AtomsPathsUtils.get_atom_path(
+            instance.config, relative_path), "atom.json")
         with open(path, "r") as f:
             data = orjson.loads(f.read())
         return cls.from_dict(instance, data)
 
     @classmethod
     def load_from_container(
-        cls, 
-        instance: "AtomsInstance", 
-        creation_date: str, 
-        podman_container_names: str, 
-        podman_container_image: str, 
+        cls,
+        instance: "AtomsInstance",
+        creation_date: str,
+        podman_container_names: str,
+        podman_container_image: str,
         podman_container_id: str
     ) -> "Atom":
         return cls(
@@ -115,30 +116,33 @@ class Atom:
 
     @classmethod
     def new(
-        cls, 
-        instance: 'AtomsInstance', 
-        name: str, 
-        distribution: 'AtomDistribution', 
-        architecture: str, 
-        release: str, 
-        download_fn: callable=None,
-        config_fn: callable=None,
-        unpack_fn: callable=None,
-        finalizing_fn: callable=None,
-        error_fn: callable=None
+        cls,
+        instance: 'AtomsInstance',
+        name: str,
+        distribution: 'AtomDistribution',
+        architecture: str,
+        release: str,
+        download_fn: callable = None,
+        config_fn: callable = None,
+        unpack_fn: callable = None,
+        finalizing_fn: callable = None,
+        error_fn: callable = None
     ) -> 'Atom':
         # Get image
         try:
-            image = AtomsImageUtils.get_image(instance, distribution, architecture, release, download_fn)
+            image = AtomsImageUtils.get_image(
+                instance, distribution, architecture, release, download_fn)
         except AtomsHashMissmatchError:
             if error_fn:
                 instance.client_bridge.exec_on_main(error_fn, "Hash missmatch")
         except AtomsFailToDownloadImage:
             if error_fn:
-                instance.client_bridge.exec_on_main(error_fn, "Fail to download image, it might be a temporary problem")
+                instance.client_bridge.exec_on_main(
+                    error_fn, "Fail to download image, it might be a temporary problem")
         except AtomsUnreachableRemote:
             if error_fn:
-                instance.client_bridge.exec_on_main(error_fn, "Unreachable remote, it might be a temporary problem")
+                instance.client_bridge.exec_on_main(
+                    error_fn, "Unreachable remote, it might be a temporary problem")
 
         # Create configuration
         if config_fn:
@@ -146,10 +150,12 @@ class Atom:
 
         date = datetime.datetime.now().isoformat()
         relative_path = str(uuid.uuid4()) + ".atom"
-        atom_path = AtomsPathsUtils.get_atom_path(instance.config, relative_path)
+        atom_path = AtomsPathsUtils.get_atom_path(
+            instance.config, relative_path)
         chroot_path = os.path.join(atom_path, "chroot")
         root_path = os.path.join(chroot_path, "root")
-        atom = cls(instance, name, distribution.distribution_id, relative_path, date)
+        atom = cls(instance, name, distribution.distribution_id,
+                   relative_path, date)
         os.makedirs(chroot_path)
 
         if config_fn:
@@ -177,7 +183,8 @@ class Atom:
             sources = sources.replace("deb-src ", "deb-src [trusted=yes] ")
             with open(os.path.join(chroot_path, "etc/apt/sources.list"), "w") as f:
                 f.write(sources)
-        shutil.copy2("/etc/resolv.conf", os.path.join(chroot_path, "etc/resolv.conf"))
+        shutil.copy2("/etc/resolv.conf",
+                     os.path.join(chroot_path, "etc/resolv.conf"))
         atom.save()
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
@@ -192,16 +199,17 @@ class Atom:
             "creationDate": self.creation_date,
             "updateDate": self.update_date
         }
-    
+
     def save(self):
         if self.is_podman_container:
             raise AtomsCannotSavePodmanContainers()
 
         path = os.path.join(self.path, "atom.json")
         with open(path, "wb") as f:
-            f.write(orjson.dumps(self.to_dict(), f, option=orjson.OPT_NON_STR_KEYS))
-    
-    def generate_command(self, command: list, environment: list=None, track_exit: bool=True) -> tuple:
+            f.write(orjson.dumps(self.to_dict(), f,
+                    option=orjson.OPT_NON_STR_KEYS))
+
+    def generate_command(self, command: list, environment: list = None, track_exit: bool = True) -> tuple:
         if self.is_podman_container:
             command, environment, working_directory = self.__generate_podman_command(
                 command, environment)
@@ -212,22 +220,24 @@ class Atom:
         if track_exit:
             command = ["sh", self.__get_launcher_script()] + command
 
-        return command, environment, working_directory 
-    
-    def __generate_proot_command(self, command: list, environment: list=None) -> tuple:
+        return command, environment, working_directory
+
+    def __generate_proot_command(self, command: list, environment: list = None) -> tuple:
         if environment is None:
             environment = []
 
-        _command = self.__proot_wrapper.get_proot_command_for_chroot(self.fs_path, command)
+        _command = self.__proot_wrapper.get_proot_command_for_chroot(
+            self.fs_path, command)
         return _command, environment, self.root_path
 
-    def __generate_podman_command(self, command: list, environment: list=None) -> tuple:
+    def __generate_podman_command(self, command: list, environment: list = None) -> tuple:
         if environment is None:
             environment = []
 
-        _command = self.__podman_wrapper.get_podman_command_for_container(self.podman_container_id, command)
+        _command = self.__podman_wrapper.get_podman_command_for_container(
+            self.podman_container_id, command)
         return _command, environment, self.root_path
-    
+
     def __get_launcher_script(self) -> str:
         script = """#!/bin/bash
 while true; do
@@ -244,8 +254,8 @@ done
         if self.is_podman_container:
             self.__podman_wrapper.destroy_container(self.podman_container_id)
             return
-        
-        # NOTE: might not be the best way to do this but shutil raises an 
+
+        # NOTE: might not be the best way to do this but shutil raises an
         #       error if has no permissions to remove the directory since
         #       the homedir is mounted in some way (not unmoutable).
         #       A better way would be stop the running proot process and
@@ -258,35 +268,36 @@ done
         if self.is_podman_container:
             self.__podman_wrapper.stop_container(self.podman_container_id)
             return
-        
+
         pids = ProcUtils.find_proc_by_cmdline(self.relative_path)
         for pid in pids:
             pid.kill()
-    
+
     def rename(self, new_name: str):
         if self.is_podman_container:
             raise AtomsCannotRenamePodmanContainers()
         self.name = new_name
         self.save()
-    
+
     def stop_podman_container(self):
         PodmanWrapper().stop_container(self.podman_container_id)
-        
+
     @property
     def path(self) -> str:
         if self.is_podman_container:
             return ""
         return AtomsPathsUtils.get_atom_path(self._instance.config, self.relative_path)
-    
+
     @property
     def fs_path(self) -> str:
         if self.is_podman_container:
             return ""
         return os.path.join(
-            AtomsPathsUtils.get_atom_path(self._instance.config, self.relative_path),
+            AtomsPathsUtils.get_atom_path(
+                self._instance.config, self.relative_path),
             "chroot"
         )
-    
+
     @property
     def root_path(self) -> str:
         if self.is_podman_container:
@@ -298,21 +309,21 @@ done
         if self.is_podman_container:
             return AtomsDistributionsUtils.get_distribution_by_container_image(self.podman_container_image)
         return AtomsDistributionsUtils.get_distribution(self.distribution_id)
-    
+
     @property
     def enter_command(self) -> list:
         return self.generate_command([])
-    
+
     @property
     def formatted_update_date(self) -> str:
         return datetime.datetime.strptime(
-                self.update_date, "%Y-%m-%dT%H:%M:%S.%f"
-            ).strftime("%d %B, %Y %H:%M:%S")
-    
+            self.update_date, "%Y-%m-%dT%H:%M:%S.%f"
+        ).strftime("%d %B, %Y %H:%M:%S")
+
     @property
     def is_podman_container(self) -> bool:
         return self.podman_container_id is not None
-    
+
     def __str__(self):
         if self.is_podman_container:
             return f"Atom {self.name} (podman container)"

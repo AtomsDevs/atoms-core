@@ -26,14 +26,14 @@ class ProotWrapper:
 
     def __init__(self):
         self.__binary_path = self.__find_binary_path()
-    
+
     def __find_binary_path(self) -> str:
         return CommandUtils.which("proot")
-    
+
     def get_proot_command_for_chroot(
-        self, 
-        chroot_path: str, 
-        command: list = None, 
+        self,
+        chroot_path: str,
+        command: list = None,
         working_directory: str = None
     ) -> list:
         if command is None:
@@ -41,7 +41,7 @@ class ProotWrapper:
 
         if working_directory is None:
             working_directory = "/"
-        
+
         command = [
             ("env", "ext_bin"),
             "-i", "HOME=/root", "HOSTNAME=atom", "TERM=xterm",
@@ -52,4 +52,3 @@ class ProotWrapper:
         ] + command
 
         return CommandUtils.get_valid_command(command)
-    

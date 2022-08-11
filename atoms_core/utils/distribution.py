@@ -32,7 +32,7 @@ class AtomsDistributionsUtils:
             return Ubuntu()
         if distribution_id == "fedora":
             return Fedora()
-        
+
         # Experimental images
         if distribution_id == "archlinux":  # pacman broken
             return ArchLinux()
@@ -42,16 +42,16 @@ class AtomsDistributionsUtils:
         #     return Fedora()
         # if distribution_id == "debian": # missing compatible tarball (no raw image)
         #     return Debian()
-            
+
         return Unknown()
-    
+
     @staticmethod
     def get_distribution_by_container_image(image: str) -> AtomDistribution:
         for distribution in AtomsDistributionsUtils.get_distributions():
             if distribution.is_container_image(image):
                 return distribution
         return Unknown()
-    
+
     @staticmethod
     def get_distributions() -> list:
         distributions = [

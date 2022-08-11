@@ -28,9 +28,9 @@ class AtomsImageUtils:
 
     @staticmethod
     def get_image(
-        instance: "AtomsInstance", 
-        distribution: "AtomDistribution", 
-        architecture: str, 
+        instance: "AtomsInstance",
+        distribution: "AtomDistribution",
+        architecture: str,
         release: str,
         update_fn: callable
     ) -> AtomImage:
@@ -45,11 +45,12 @@ class AtomsImageUtils:
                 raise AtomsFailToDownloadImage(remote)
 
         return AtomImage(image_name, image_path, distribution.root)
-    
+
     @staticmethod
     def get_image_list(config: "AtomsConfig"):
         image_list = []
         for image in os.listdir(config.atoms_images):
-            image_list.append(AtomImage(image, os.path.join(config.atoms_images, image)))
+            image_list.append(
+                AtomImage(image, os.path.join(config.atoms_images, image)))
         image_list.sort(key=lambda x: x.name)
         return image_list

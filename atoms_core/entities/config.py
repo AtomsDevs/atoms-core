@@ -47,7 +47,7 @@ class AtomsConfig:
                 os.makedirs(self.atoms_path)
             except PermissionError:
                 raise AtomsCantMakeAtomsPath(self.atoms_path)
-                
+
         if not os.path.exists(self.atoms_images):
             try:
                 os.makedirs(self.atoms_images)
@@ -57,8 +57,9 @@ class AtomsConfig:
     def __save(self):
         os.makedirs(AtomsPaths.app_data, exist_ok=True)
         with open(AtomsPaths.config_file, "wb") as f:
-            f.write(orjson.dumps(self.to_dict(), f, option=orjson.OPT_NON_STR_KEYS))
-    
+            f.write(orjson.dumps(self.to_dict(), f,
+                    option=orjson.OPT_NON_STR_KEYS))
+
     def to_dict(self) -> dict:
         conf = {}
         if self.atoms_path != AtomsPaths.atoms:
@@ -66,7 +67,7 @@ class AtomsConfig:
         if self.atoms_images != AtomsPaths.images:
             conf["images.path"] = self.atoms_images
         return conf
-    
+
     def restore_default(self, config_key: str):
         if config_key == "atoms.path":
             self.atoms_path = AtomsPaths.atoms
@@ -74,7 +75,7 @@ class AtomsConfig:
             self.atoms_images = AtomsPaths.images
         else:
             raise AtomsConfigKeyNotFound(config_key)
-            
+
         self.__save()
 
     def is_default(self, config_key: str) -> bool:
@@ -83,7 +84,7 @@ class AtomsConfig:
         elif config_key == "images.path":
             return self.atoms_images == AtomsPaths.images
         return False
-    
+
     def set_value(self, config_key: str, config_value: str):
         if config_key == "atoms.path":
             self.atoms_path = config_value
@@ -91,5 +92,5 @@ class AtomsConfig:
             self.atoms_images = config_value
         else:
             raise AtomsConfigKeyNotFound(config_key)
-            
+
         self.__save()

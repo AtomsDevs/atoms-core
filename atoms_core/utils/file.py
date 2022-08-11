@@ -45,10 +45,10 @@ class FileUtils:
             return self.get_human_size(size)
 
         return size
-    
+
     @staticmethod
-    def native_rm(path: str, option: str=None):
+    def native_rm(path: str, option: str = None):
         """Wrapper to the native rm binary. Default to -rf option."""
         if option is None:
             option = "-rf"
-        CommandUtils.run_command([("rm", "bin"), option], path)
+        CommandUtils.run_command([("rm", "bin"), option, path], wait=True)

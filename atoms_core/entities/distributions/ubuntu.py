@@ -4,8 +4,8 @@ from atoms_core.entities.distribution import AtomDistribution
 class Ubuntu(AtomDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="ubuntu", 
-            name="Ubuntu", 
+            distribution_id="ubuntu",
+            name="Ubuntu",
             logo="ubuntu-symbolic",
             releases=["22.04", "20.04"],
             remote_structure="http://cdimage.ubuntu.com/ubuntu-base/releases/{0}/release/ubuntu-base-{0}-base-{1}.tar.gz",
@@ -15,6 +15,6 @@ class Ubuntu(AtomDistribution):
             root="",
             container_image_name="ubuntu"
         )
-    
+
     def get_remote_hash(self, _, release: str) -> str:
         return self.remote_hash_structure.format(release)

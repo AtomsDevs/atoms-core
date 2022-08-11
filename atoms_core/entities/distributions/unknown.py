@@ -4,7 +4,7 @@ from atoms_core.entities.distribution import AtomDistribution
 class Unknown(AtomDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="unknown", 
+            distribution_id="unknown",
             name="Unknown distribution",
             logo="pm.mirko.Atoms-symbolic",
             releases=[],

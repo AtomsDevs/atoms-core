@@ -32,12 +32,12 @@ class AtomDistribution:
     architectures: dict
 
     def __init__(
-        self, 
-        distribution_id: str, 
-        name: str, 
-        logo: str, 
+        self,
+        distribution_id: str,
+        name: str,
+        logo: str,
         releases: list,
-        remote_structure: str, 
+        remote_structure: str,
         remote_hash_structure: str,
         remote_hash_type: str,
         architectures: dict,
@@ -57,24 +57,24 @@ class AtomDistribution:
 
     def __str__(self):
         return f"Distribution {self.name}"
-    
+
     def get_remote(self, architecture: str, release: str) -> str:
         return self.remote_structure.format(release, architecture)
 
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return self.remote_hash_structure.format(release, architecture)
-    
+
     def get_image_name(self, architecture: str, release: str) -> str:
         remote = self.get_remote(architecture, release)
         return os.path.basename(remote)
-    
+
     def read_remote_hash(self, architecture: str, release: str) -> str:
         remote_hash = self.get_remote_hash(architecture, release)
         response = requests.get(remote_hash)
 
         if response.status_code != 200:
             raise AtomsUnreachableRemote(remote_hash)
-            
+
         content = response.text.split("\n")
         for line in content:
             _hash, _file = re.split(r"\s+", line, maxsplit=1)
@@ -82,6 +82,6 @@ class AtomDistribution:
                 return _hash.strip()
 
         raise ValueError(f"Unknown check_type method: {check_type}")
-    
+
     def is_container_image(self, image: str) -> bool:
         return self.container_image_name in image

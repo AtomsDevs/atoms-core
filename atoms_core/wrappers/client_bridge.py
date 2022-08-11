@@ -15,7 +15,7 @@ class ClientBridge:
     client_name: str
     client_toolkit: str
 
-    def __init__(self, client_name: str=None, client_toolkit: str=None):
+    def __init__(self, client_name: str = None, client_toolkit: str = None):
         if client_name is None:
             client_name = ""
 

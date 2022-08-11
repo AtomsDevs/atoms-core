@@ -39,7 +39,7 @@ class CommandUtils:
         """
         binary_path = shutil.which("flatpak-spawn")
         return [binary_path, "--host"] + command
-    
+
     @staticmethod
     def flatpak_host_which(binary: str) -> str:
         """
@@ -57,9 +57,9 @@ class CommandUtils:
             return proc.decode("utf-8").strip()
         except FileNotFoundError:
             raise AtomsNoBinaryFound(binary)
-    
+
     @staticmethod
-    def which(binary: str, allow_flatpak_host: bool=False) -> str:
+    def which(binary: str, allow_flatpak_host: bool = False) -> str:
         """
         Returns the path to the binary in the host system.
 
@@ -74,9 +74,9 @@ class CommandUtils:
         if allow_flatpak_host and CommandUtils.is_flatpak():
             return CommandUtils.flatpak_host_which(binary)
         return shutil.which(binary)
-    
+
     @staticmethod
-    def get_valid_command(command: list, allow_flatpak_host: bool=False) -> list:
+    def get_valid_command(command: list, allow_flatpak_host: bool = False) -> list:
         """
         Returns the command with the absolute path to the binary. The command
         list can contain a tuple of the form (binary, type), the type is used
@@ -101,16 +101,21 @@ class CommandUtils:
                 _part = CommandUtils.which(_part)
             elif _type == "ext_bin":
                 _part = CommandUtils.which(_part, allow_flatpak_host=True)
-                
+
             _command.append(_part)
 
         if allow_flatpak_host and CommandUtils.is_flatpak():
             _command = CommandUtils.get_flatpak_command(_command)
 
         return _command
-    
+
     @staticmethod
-    def run_command(command: list, output: bool=False, wait: bool=False, allow_flatpak_host: bool=False) -> Union[str, None]:
+    def run_command(
+        command: list,
+        output: bool = False,
+        wait: bool = False,
+        allow_flatpak_host: bool = False
+    ) -> Union[str, None]:
         """
         Runs the command and returns the output.
 
@@ -128,9 +133,9 @@ class CommandUtils:
 
         if wait:
             proc.wait()
-    
+
     @staticmethod
-    def check_call(command: list, allow_flatpak_host: bool=False, ignore_errors: bool=False):
+    def check_call(command: list, allow_flatpak_host: bool = False, ignore_errors: bool = False):
         """
         Runs the command and returns the output.
 

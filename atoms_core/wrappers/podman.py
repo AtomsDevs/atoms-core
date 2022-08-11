@@ -24,18 +24,18 @@ class PodmanWrapper:
 
     def __init__(self):
         self.__binary_path = self.__find_binary_path()
-    
+
     def __find_binary_path(self) -> str:
         return CommandUtils.which("podman", allow_flatpak_host=True)
-    
+
     def get_containers(self) -> list:
         containers = {}
         command = [
-            self.__binary_path, 
-            "ps", "-a", "--format", 
+            self.__binary_path,
+            "ps", "-a", "--format",
             "{{.ID}}+|+{{.Image}}+|+{{.Names}}+|+{{.CreatedAt}}"
         ]
-            
+
         output = CommandUtils.run_command(
             command, output=True, allow_flatpak_host=True
         ).strip().split("\n")
@@ -43,7 +43,7 @@ class PodmanWrapper:
         for line in output:
             _id, _image, _names, _created_at = line.split("+|+")
             containers[_id] = {
-                "image": _image, 
+                "image": _image,
                 "names": _names,
                 "creation_date": _created_at
             }
@@ -51,9 +51,9 @@ class PodmanWrapper:
         return containers
 
     def get_podman_command_for_container(
-        self, 
-        container_id: str, 
-        command: list = None, 
+        self,
+        container_id: str,
+        command: list = None,
         working_directory: str = None
     ) -> list:
         self.__start_container(container_id)
@@ -70,19 +70,20 @@ class PodmanWrapper:
         ] + command
 
         return CommandUtils.get_valid_command(command, allow_flatpak_host=True)
-    
+
     def __start_container(self, container_id: str):
         command = [self.__binary_path, "start", container_id]
         CommandUtils.run_command(command, allow_flatpak_host=True)
-    
+
     def destroy_container(self, container_id: str):
         command = [self.__binary_path, "rm", "-f", container_id]
         CommandUtils.run_command(command, allow_flatpak_host=True)
-    
+
     def stop_container(self, container_id: str):
         command = [self.__binary_path, "kill", container_id]
-        CommandUtils.check_call(command, allow_flatpak_host=True, ignore_errors=True)
-        
+        CommandUtils.check_call(
+            command, allow_flatpak_host=True, ignore_errors=True)
+
     @property
     def is_supported(self) -> bool:
         return self.__binary_path is not None

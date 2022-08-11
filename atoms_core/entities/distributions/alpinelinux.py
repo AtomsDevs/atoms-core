@@ -4,7 +4,7 @@ from atoms_core.entities.distribution import AtomDistribution
 class AlpineLinux(AtomDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="alpinelinux", 
+            distribution_id="alpinelinux",
             name="Alpine Linux",
             logo="alpine-linux-symbolic",
             releases=["3.16.1", "3.16.0"],
@@ -15,17 +15,19 @@ class AlpineLinux(AtomDistribution):
             root="",
             container_image_name="alpine"
         )
-    
+
     def get_remote(self, architecture: str, release: str) -> str:
         return self.remote_structure.format(
-            '.'.join(release.split('.')[:2]), # only take major and minor version
-            architecture, 
+            # only take major and minor version
+            '.'.join(release.split('.')[:2]),
+            architecture,
             release
         )
-    
+
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return self.remote_hash_structure.format(
-            '.'.join(release.split('.')[:2]), # only take major and minor version
-            architecture, 
+            # only take major and minor version
+            '.'.join(release.split('.')[:2]),
+            architecture,
             release
         )

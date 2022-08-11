@@ -35,12 +35,12 @@ class DownloadUtils:
     """
 
     def __init__(
-        self, 
+        self,
         instance: "AtomsInstance",
-        url: str, 
-        file: str, 
-        func: callable = None, 
-        hash_value: str = None, 
+        url: str,
+        file: str,
+        func: callable = None,
+        hash_value: str = None,
         hash_type: str = None
     ):
         self.__instance = instance
@@ -77,10 +77,12 @@ class DownloadUtils:
                 else:
                     file.write(response.content)
                     if self.func is not None:
-                        self.__instance.client_bridge.exec_on_main(self.func, 1, 1, 1)
+                        self.__instance.client_bridge.exec_on_main(
+                            self.func, 1, 1, 1)
                         self.__progress(1, 1, 1)
         except requests.exceptions.SSLError:
-            logger.error("Download failed due to a SSL error. Your system may have a wrong date/time or wrong certificates.")
+            logger.error(
+                "Download failed due to a SSL error. Your system may have a wrong date/time or wrong certificates.")
             return False
         except (requests.exceptions.RequestException, OSError):
             logger.error("Download failed! Check your internet connection.")
@@ -89,7 +91,8 @@ class DownloadUtils:
         if None not in [self.hash_value, self.hash_type]:
             _hash = HashUtils.get_hash(self.file, self.hash_type)
             if _hash != self.hash_value:
-                logger.error(f"Download failed! The downloaded file is corrupted.\n\tExpected {self.hash_value} got {_hash}.")
+                logger.error(
+                    f"Download failed! The downloaded file is corrupted.\n\tExpected {self.hash_value} got {_hash}.")
                 raise AtomsHashMissmatchError()
         return True
 
@@ -98,7 +101,8 @@ class DownloadUtils:
         percent = int(count * block_size * 100 / total_size)
         done_str = FileUtils.get_human_size(count * block_size)
         total_str = FileUtils.get_human_size(total_size)
-        speed_str = FileUtils.get_human_size(count * block_size / (time.time() - self.start_time))
+        speed_str = FileUtils.get_human_size(
+            count * block_size / (time.time() - self.start_time))
         name = self.file.split("/")[-1]
         c_close, c_complete, c_incomplete = "\033[0m", "\033[92m", "\033[90m"
         print(
