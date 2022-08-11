@@ -18,6 +18,8 @@ import os
 from pathlib import Path
 from typing import Union
 
+from atoms_core.utils.command import CommandUtils
+
 
 class FileUtils:
 
@@ -43,3 +45,7 @@ class FileUtils:
             return self.get_human_size(size)
 
         return size
+    
+    @staticmethod
+    def native_rm(path: str):
+        CommandUtils.run_command(("rm", "bin"),"-rf", path)

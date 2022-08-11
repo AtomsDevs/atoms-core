@@ -21,7 +21,6 @@ import orjson
 import tempfile
 import datetime
 import importlib
-import subprocess
 
 from atoms_core.exceptions.atom import AtomsWrongAtomData
 from atoms_core.exceptions.download import AtomsHashMissmatchError
@@ -30,6 +29,7 @@ from atoms_core.exceptions.distribution import AtomsUnreachableRemote
 from atoms_core.utils.paths import AtomsPathsUtils
 from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.utils.distribution import AtomsDistributionsUtils
+from atoms_core.utils.file import FileUtils
 from atoms_core.wrappers.proot import ProotWrapper
 from atoms_core.wrappers.podman import PodmanWrapper
 
@@ -252,8 +252,8 @@ done
         #       then remove the directory, but since Atoms has a no track
         #       of the proot process, this is the best we can do for now.
         binary_path = shutil.which("rm")
-        subprocess.run([binary_path, "-rf", self.path])        
-    
+        FileUtils.rm_native(self.path)
+
     def kill(self):
         if self.is_podman_container:
             self.__podman_wrapper.stop_container(self.podman_container_id)
