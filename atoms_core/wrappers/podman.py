@@ -16,38 +16,31 @@
 
 import os
 import shutil
-import subprocess
+
+from atoms_core.utils.command import CommandUtils
 
 
 class PodmanWrapper:
 
     def __init__(self):
-        self.__is_flatpak = "FLATPAK_ID" in os.environ
         self.__binary_path = self.__find_binary_path()
-
-
+    
     def __find_binary_path(self) -> str:
-        if self.__is_flatpak:
-            try:
-                proc = subprocess.check_output(self.__get_flatpak_command(["which", "podman"]))
-                return proc.decode("utf-8").strip()
-            except FileNotFoundError:
-                return
-
-        return shutil.which("podman")
+        return CommandUtils.which("podman", allow_flatpak_host=True)
     
     def get_containers(self) -> list:
         containers = {}
-        command = [self.__binary_path, "ps", "-a", "--format", 
-                    "{{.ID}}+|+{{.Image}}+|+{{.Names}}+|+{{.CreatedAt}}"]
-
-        if self.__is_flatpak:
-            command = self.__get_flatpak_command(command)
+        command = [
+            self.__binary_path, 
+            "ps", "-a", "--format", 
+            "{{.ID}}+|+{{.Image}}+|+{{.Names}}+|+{{.CreatedAt}}"
+        ]
             
-        proc = subprocess.check_output(command)
-        lines = proc.decode("utf-8").strip().split("\n")
+        output = CommandUtils.run_command(
+            command, output=True, allow_flatpak_host=True
+        ).strip().split("\n")
 
-        for line in lines:
+        for line in output:
             _id, _image, _names, _created_at = line.split("+|+")
             containers[_id] = {
                 "image": _image, 
@@ -76,41 +69,19 @@ class PodmanWrapper:
             container_id,
         ] + command
 
-        if self.__is_flatpak:
-            command = self.__get_flatpak_command(command)
-
-        return command
+        return CommandUtils.get_valid_command(command, allow_flatpak_host=True)
     
     def __start_container(self, container_id: str):
         command = [self.__binary_path, "start", container_id]
-
-        if self.__is_flatpak:
-            command = self.__get_flatpak_command(command)
-
-        subprocess.check_call(command)
+        CommandUtils.run_command(command, allow_flatpak_host=True)
     
     def destroy_container(self, container_id: str):
         command = [self.__binary_path, "rm", "-f", container_id]
-
-        if self.__is_flatpak:
-            command = self.__get_flatpak_command(command)
-
-        subprocess.check_call(command)
+        CommandUtils.run_command(command, allow_flatpak_host=True)
     
     def stop_container(self, container_id: str):
         command = [self.__binary_path, "kill", container_id]
-
-        if self.__is_flatpak:
-            command = self.__get_flatpak_command(command)
-
-        try:
-            subprocess.check_call(command)
-        except subprocess.CalledProcessError:
-            pass
-    
-    def __get_flatpak_command(self, command: list) -> list:
-        binary_path = shutil.which("flatpak-spawn")
-        return [binary_path, "--host"] + command
+        CommandUtils.check_call(command, allow_flatpak_host=True, ignore_errors=True)
         
     @property
     def is_supported(self) -> bool:

@@ -18,6 +18,7 @@ import os
 import shutil
 import subprocess
 
+from atoms_core.utils.command import CommandUtils
 from atoms_core.exceptions.common import AtomsNoBinaryFound
 
 
@@ -27,10 +28,7 @@ class ProotWrapper:
         self.__binary_path = self.__find_binary_path()
     
     def __find_binary_path(self) -> str:
-        res = shutil.which("proot")
-        if res is None:
-            raise AtomsNoBinaryFound("proot")
-        return res
+        return CommandUtils.which("proot")
     
     def get_proot_command_for_chroot(
         self, 
@@ -44,13 +42,14 @@ class ProotWrapper:
         if working_directory is None:
             working_directory = "/"
         
-        env_bin = shutil.which("env")
-        return [
-            env_bin,
+        command = [
+            ("env", "ext_bin"),
             "-i", "HOME=/root", "HOSTNAME=atom", "TERM=xterm",
             self.__binary_path,
             "-w", working_directory,
             # "-b", f"/run/user/{os.getuid()}",  # xorg experiments
             "-S", chroot_path
         ] + command
+
+        return CommandUtils.get_valid_command(command)
     
