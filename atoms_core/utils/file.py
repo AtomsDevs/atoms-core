@@ -48,4 +48,4 @@ class FileUtils:
     
     @staticmethod
     def native_rm(path: str):
-        CommandUtils.run_command(("rm", "bin"),"-rf", path)
+        CommandUtils.run_command([("rm", "bin"), "-rf"], path)

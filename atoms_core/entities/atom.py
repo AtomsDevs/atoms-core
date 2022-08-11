@@ -252,7 +252,7 @@ done
         #       then remove the directory, but since Atoms has a no track
         #       of the proot process, this is the best we can do for now.
         binary_path = shutil.which("rm")
-        FileUtils.rm_native(self.path)
+        FileUtils.native_rm(self.path)
 
     def kill(self):
         if self.is_podman_container:
