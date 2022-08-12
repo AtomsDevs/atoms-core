@@ -26,6 +26,7 @@ from atoms_core.exceptions.atom import AtomsWrongAtomData
 from atoms_core.exceptions.download import AtomsHashMissmatchError
 from atoms_core.exceptions.image import AtomsFailToDownloadImage
 from atoms_core.exceptions.distribution import AtomsUnreachableRemote
+from atoms_core.exceptions.podman import AtomsFailToCreateContainer
 from atoms_core.utils.paths import AtomsPathsUtils
 from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.utils.distribution import AtomsDistributionsUtils
@@ -134,15 +135,18 @@ class Atom:
                 instance, distribution, architecture, release, download_fn)
         except AtomsHashMissmatchError:
             if error_fn:
-                instance.client_bridge.exec_on_main(error_fn, "Hash missmatch")
+                instance.client_bridge.exec_on_main(error_fn, "Hash missmatch.")
+            return
         except AtomsFailToDownloadImage:
             if error_fn:
                 instance.client_bridge.exec_on_main(
-                    error_fn, "Fail to download image, it might be a temporary problem")
+                    error_fn, "Fail to download image, it might be a temporary problem.")
+            return
         except AtomsUnreachableRemote:
             if error_fn:
                 instance.client_bridge.exec_on_main(
-                    error_fn, "Unreachable remote, it might be a temporary problem")
+                    error_fn, "Unreachable remote, it might be a temporary problem.")
+            return
 
         # Create configuration
         if config_fn:
@@ -186,6 +190,48 @@ class Atom:
         shutil.copy2("/etc/resolv.conf",
                      os.path.join(chroot_path, "etc/resolv.conf"))
         atom.save()
+        if finalizing_fn:
+            instance.client_bridge.exec_on_main(finalizing_fn, 1)
+
+        return atom
+    
+    @classmethod
+    def new_podman(
+        cls,
+        instance: 'AtomsInstance',
+        name: str,
+        podman_container_image: str,
+        podman_fn: callable = None,
+        finalizing_fn: callable = None,
+        error_fn: callable = None
+    ) -> 'Atom':
+        # Podman container creation
+        if podman_fn:
+            instance.client_bridge.exec_on_main(podman_fn, 0)
+
+        try:
+            podman_container_id = PodmanWrapper().new_container(name, podman_container_image)
+        except AtomsFailToCreateContainer:
+            if error_fn:
+                instance.client_bridge.exec_on_main(
+                    error_fn, "Fail to create container, it might be a temporary problem or a wrong image was requested.")
+            return
+            
+        if podman_fn:
+            instance.client_bridge.exec_on_main(podman_fn, 1)
+
+        # Finalizing
+        if finalizing_fn:
+            instance.client_bridge.exec_on_main(finalizing_fn, 0)
+
+        atom = cls.load_from_container(
+            instance,
+            datetime.datetime.now().isoformat(),
+            name,
+            podman_container_image,
+            podman_container_id
+        )
+
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
 

@@ -18,6 +18,7 @@ import os
 import shutil
 
 from atoms_core.utils.command import CommandUtils
+from atoms_core.exceptions.podman import AtomsFailToCreateContainer
 
 
 class PodmanWrapper:
@@ -83,6 +84,49 @@ class PodmanWrapper:
         command = [self.__binary_path, "kill", container_id]
         CommandUtils.check_call(
             command, allow_flatpak_host=True, ignore_errors=True)
+    
+    def new_container(self, name: str, image: str) -> str:
+        # create new container for shell usage, entrypoint must be /bin/sh
+        command = [
+            self.__binary_path, "create", 
+            "-it",
+            "--ipc", "host",
+            "--name", name, 
+            "--network", "host",
+            "--privileged",
+            "--user", "root:root",
+            "--pid", "host",
+            "--env", "SHELL=/bin/sh", 
+            "--env", f"HOME={os.environ['HOME']}",
+            "--volume", f"{os.environ['HOME']}:{os.environ['HOME']}:rslave",
+            "--volume", "/:/run/host:rslave",
+            "--volume", "/dev:/dev:rslave",
+            "--volume", "/sys:/sys:rslave",
+            "--volume", "/tmp:/tmp:rslave",
+            "--volume", "/sys/fs/selinux:/sys/fs/selinux:rslave",
+            "--volume", "/var/log/journal:/var/log/journal:rslave",
+            "--volume", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}:rslave",
+            "--volume", "/etc/hosts:/etc/hosts:ro",
+            "--volume", "/etc/localtime:/etc/localtime:ro",
+            "--volume", "/etc/resolv.conf:/etc/resolv.conf:ro",
+            "--entrypoint", "/bin/sh", 
+            image,
+        ]
+        try:
+            CommandUtils.run_command(command, output=True, wait=True, allow_flatpak_host=True)
+        except Exception as e:
+            # TODO: improve error message
+            raise AtomsFailToCreateContainer(str(e))
+
+        _containers = self.get_containers()
+        for _id, _container in _containers.items():
+            if _container["names"] == name:
+                return _id
+
+        raise AtomsFailToCreateContainer(
+            "A container with name '{}' was not found after creation. Somethings goes wrong.".format(name)
+        )
+
 
     @property
     def is_supported(self) -> bool:

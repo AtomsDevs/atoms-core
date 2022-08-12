@@ -18,6 +18,7 @@ import os
 
 from atoms_core.entities.config import AtomsConfig
 from atoms_core.entities.atom import Atom
+from atoms_core.entities.atom_type import AtomType
 from atoms_core.entities.instance import AtomsInstance
 from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.wrappers.client_bridge import ClientBridge
@@ -60,19 +61,28 @@ class AtomsBackend:
     def request_new_atom(
         self,
         name: str,
-        distribution: 'AtomDistribution',
-        architecture: str,
-        release: str,
+        atom_type: 'AtomType',
+        distribution: 'AtomDistribution'=None,
+        architecture: str=None,
+        release: str=None,
+        podman_container_image: str=None,
         download_fn: callable = None,
         config_fn: callable = None,
         unpack_fn: callable = None,
+        podman_fn: callable = None,
         finalizing_fn: callable = None,
         error_fn: callable = None
     ):
-        return Atom.new(
-            self.__instance, name, distribution, architecture, release,
-            download_fn, config_fn, unpack_fn, finalizing_fn, error_fn
-        )
+        if atom_type == AtomType.ATOM_CHROOT:
+            return Atom.new(
+                self.__instance, name, distribution, architecture, release,
+                download_fn, config_fn, unpack_fn, finalizing_fn, error_fn
+            )
+        elif atom_type == AtomType.PODMAN_CONTAINER:
+            return Atom.new_podman(
+                self.__instance, name, podman_container_image, podman_fn, 
+                finalizing_fn, error_fn
+            )
 
     @property
     def atoms(self) -> dict:
