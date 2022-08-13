@@ -69,12 +69,13 @@ class DistroboxWrapper:
 
         return CommandUtils.get_valid_command(command)
 
-    def destroy_container(self, container_id: str):
-        command = [self.__binary_path, "rm", container_id]
+    def destroy_container(self, container_id: str, container_name: str):
+        self.stop_container(container_id)
+        command = [self.__binary_path, "rm", "-f", container_name]
         CommandUtils.run_command(command)
 
     def stop_container(self, container_id: str):
-        command = [self.__binary_path, "stop", container_id]
+        command = [self.__binary_path, "stop", "-f", container_id]
         CommandUtils.run_command(command)
     
     def new_container(self, name: str, image: str) -> str:

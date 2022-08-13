@@ -298,7 +298,7 @@ done
 
     def destroy(self):
         if self.is_distrobox_container:
-            self.__distrobox_wrapper.destroy_container(self.container_id)
+            self.__distrobox_wrapper.destroy_container(self.container_id, self.name)
             return
 
         # NOTE: might not be the best way to do this but shutil raises an
