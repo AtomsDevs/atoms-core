@@ -41,7 +41,7 @@ class DistroboxWrapper:
             .strip().split("\n")[1:]
 
         for line in output:
-            _id, _name, _image, _status = line.split("|")
+            _id, _name, _, _image = line.split("|")
             containers[_id] = {
                 "image": _image,
                 "name": _name,
