@@ -22,20 +22,20 @@ from atoms_core.entities.atom_type import AtomType
 from atoms_core.entities.instance import AtomsInstance
 from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.wrappers.client_bridge import ClientBridge
-from atoms_core.wrappers.podman import PodmanWrapper
+from atoms_core.wrappers.distrobox import DistroboxWrapper
 
 
 class AtomsBackend:
     __atoms: dict
     config: AtomsConfig
 
-    def __init__(self, podman_support: bool = False, client_bridge: 'ClientBridge' = None):
+    def __init__(self, distrobox_support: bool = False, client_bridge: 'ClientBridge' = None):
         if client_bridge is None:
             client_bridge = ClientBridge()
 
         self.__config = AtomsConfig()
         self.__instance = AtomsInstance(self.__config, client_bridge)
-        self.__podman_support = podman_support
+        self.__distrobox_support = distrobox_support
         self.__atoms = self.__list_atoms()
 
     def __list_atoms(self) -> dict:
@@ -44,17 +44,21 @@ class AtomsBackend:
             if atom.endswith(".atom"):
                 atoms[atom] = Atom.load(self.__instance, atom)
 
-        if self.__podman_support and self.has_podman_support:
-            atoms.update(self.__list_podman_atoms())
+        if self.__distrobox_support and self.has_distrobox_support:
+            atoms.update(self.__list_distrobox_atoms())
 
         return atoms
 
-    def __list_podman_atoms(self) -> dict:
+    def __list_distrobox_atoms(self) -> dict:
         atoms = {}
-        containers = PodmanWrapper().get_containers()
+        containers = DistroboxWrapper().get_containers()
+
+        if not containers:
+            return atoms
+
         for container_id, info in containers.items():
             atoms[container_id] = Atom.load_from_container(
-                self.__instance, info["creation_date"], info["names"], info["image"], container_id
+                self.__instance, info["creation_date"], info["name"], info["image"], container_id
             )
         return atoms
 
@@ -65,11 +69,11 @@ class AtomsBackend:
         distribution: 'AtomDistribution'=None,
         architecture: str=None,
         release: str=None,
-        podman_container_image: str=None,
+        container_image: str=None,
         download_fn: callable = None,
         config_fn: callable = None,
         unpack_fn: callable = None,
-        podman_fn: callable = None,
+        distrobox_fn: callable = None,
         finalizing_fn: callable = None,
         error_fn: callable = None
     ):
@@ -78,9 +82,9 @@ class AtomsBackend:
                 self.__instance, name, distribution, architecture, release,
                 download_fn, config_fn, unpack_fn, finalizing_fn, error_fn
             )
-        elif atom_type == AtomType.PODMAN_CONTAINER:
-            return Atom.new_podman(
-                self.__instance, name, podman_container_image, podman_fn, 
+        elif atom_type == AtomType.DISTROBOX_CONTAINER:
+            return Atom.new_container(
+                self.__instance, name, container_image, distrobox_fn, 
                 finalizing_fn, error_fn
             )
 
@@ -97,8 +101,8 @@ class AtomsBackend:
         return AtomsImageUtils.get_image_list(self.__config)
 
     @property
-    def has_podman_support(self) -> bool:
-        return PodmanWrapper().is_supported
+    def has_distrobox_support(self) -> bool:
+        return DistroboxWrapper().is_supported
 
     @property
     def client_bridge(self) -> 'ClientBridge':

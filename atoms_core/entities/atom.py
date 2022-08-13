@@ -32,7 +32,7 @@ from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.utils.distribution import AtomsDistributionsUtils
 from atoms_core.utils.file import FileUtils
 from atoms_core.wrappers.proot import ProotWrapper
-from atoms_core.wrappers.podman import PodmanWrapper
+from atoms_core.wrappers.distrobox import DistroboxWrapper
 
 
 class Atom:
@@ -50,26 +50,26 @@ class Atom:
         relative_path: str = None,
         creation_date: str = None,
         update_date: str = None,
-        podman_container_id: str = None,
-        podman_container_image: str = None
+        container_id: str = None,
+        container_image: str = None
     ):
-        if update_date is None and podman_container_id:
+        if update_date is None and container_id:
             update_date = datetime.datetime.now().isoformat()
         elif update_date is None:
             update_date = creation_date
 
         self._instance = instance
-        self.name = name
+        self.name = name.strip()
         self.distribution_id = distribution_id
         self.relative_path = relative_path
         self.creation_date = creation_date
         self.update_date = update_date
-        self.podman_container_id = podman_container_id
-        self.podman_container_image = podman_container_image
+        self.container_id = container_id
+        self.container_image = container_image
         self.__proot_wrapper = ProotWrapper()
 
-        if podman_container_id:
-            self.__podman_wrapper = PodmanWrapper()
+        if container_id:
+            self.__distrobox_wrapper = DistroboxWrapper()
 
     @classmethod
     def from_dict(cls, instance: "AtomsInstance", data: dict) -> "Atom":
@@ -103,16 +103,16 @@ class Atom:
         cls,
         instance: "AtomsInstance",
         creation_date: str,
-        podman_container_names: str,
-        podman_container_image: str,
-        podman_container_id: str
+        container_name: str,
+        container_image: str,
+        container_id: str
     ) -> "Atom":
         return cls(
             instance,
-            podman_container_names,
+            container_name,
             creation_date=creation_date,
-            podman_container_id=podman_container_id,
-            podman_container_image=podman_container_image
+            container_id=container_id,
+            container_image=container_image
         )
 
     @classmethod
@@ -194,31 +194,31 @@ class Atom:
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
 
         return atom
-    
+
     @classmethod
-    def new_podman(
+    def new_container(
         cls,
         instance: 'AtomsInstance',
         name: str,
-        podman_container_image: str,
-        podman_fn: callable = None,
+        container_image: str,
+        distrobox_fn: callable = None,
         finalizing_fn: callable = None,
         error_fn: callable = None
     ) -> 'Atom':
-        # Podman container creation
-        if podman_fn:
-            instance.client_bridge.exec_on_main(podman_fn, 0)
+        # Distrobox container creation
+        if distrobox_fn:
+            instance.client_bridge.exec_on_main(distrobox_fn, 0)
 
         try:
-            podman_container_id = PodmanWrapper().new_container(name, podman_container_image)
+            distrobox_container_id = DistroboxWrapper().new_container(name, container_image)
         except AtomsFailToCreateContainer:
             if error_fn:
                 instance.client_bridge.exec_on_main(
                     error_fn, "Fail to create container, it might be a temporary problem or a wrong image was requested.")
             return
-            
-        if podman_fn:
-            instance.client_bridge.exec_on_main(podman_fn, 1)
+
+        if distrobox_fn:
+            instance.client_bridge.exec_on_main(distrobox_fn, 1)
 
         # Finalizing
         if finalizing_fn:
@@ -228,8 +228,8 @@ class Atom:
             instance,
             datetime.datetime.now().isoformat(),
             name,
-            podman_container_image,
-            podman_container_id
+            container_image,
+            container_id
         )
 
         if finalizing_fn:
@@ -247,7 +247,7 @@ class Atom:
         }
 
     def save(self):
-        if self.is_podman_container:
+        if self.is_distrobox_container:
             raise AtomsCannotSavePodmanContainers()
 
         path = os.path.join(self.path, "atom.json")
@@ -256,8 +256,8 @@ class Atom:
                     option=orjson.OPT_NON_STR_KEYS))
 
     def generate_command(self, command: list, environment: list = None, track_exit: bool = True) -> tuple:
-        if self.is_podman_container:
-            command, environment, working_directory = self.__generate_podman_command(
+        if self.is_distrobox_container:
+            command, environment, working_directory = self.__generate_distrobox_command(
                 command, environment)
         else:
             command, environment, working_directory = self.__generate_proot_command(
@@ -276,12 +276,12 @@ class Atom:
             self.fs_path, command)
         return _command, environment, self.root_path
 
-    def __generate_podman_command(self, command: list, environment: list = None) -> tuple:
+    def __generate_distrobox_command(self, command: list, environment: list = None) -> tuple:
         if environment is None:
             environment = []
 
-        _command = self.__podman_wrapper.get_podman_command_for_container(
-            self.podman_container_id, command)
+        _command = self.__distrobox_wrapper.get_distrobox_command_for_container(
+            self.container_id, command)
         return _command, environment, self.root_path
 
     def __get_launcher_script(self) -> str:
@@ -297,8 +297,8 @@ done
             return f.name
 
     def destroy(self):
-        if self.is_podman_container:
-            self.__podman_wrapper.destroy_container(self.podman_container_id)
+        if self.is_distrobox_container:
+            self.__distrobox_wrapper.destroy_container(self.distrobox_container_id)
             return
 
         # NOTE: might not be the best way to do this but shutil raises an
@@ -311,8 +311,8 @@ done
         FileUtils.native_rm(self.path)
 
     def kill(self):
-        if self.is_podman_container:
-            self.__podman_wrapper.stop_container(self.podman_container_id)
+        if self.is_distrobox_container:
+            self.__distrobox_wrapper.stop_container(self.container_id)
             return
 
         pids = ProcUtils.find_proc_by_cmdline(self.relative_path)
@@ -320,23 +320,23 @@ done
             pid.kill()
 
     def rename(self, new_name: str):
-        if self.is_podman_container:
+        if self.is_distrobox_container:
             raise AtomsCannotRenamePodmanContainers()
         self.name = new_name
         self.save()
 
-    def stop_podman_container(self):
-        PodmanWrapper().stop_container(self.podman_container_id)
+    def stop_distrobox_container(self):
+        self.__distrobox_wrapper.stop_container(self.container_id)
 
     @property
     def path(self) -> str:
-        if self.is_podman_container:
+        if self.is_distrobox_container:
             return ""
         return AtomsPathsUtils.get_atom_path(self._instance.config, self.relative_path)
 
     @property
     def fs_path(self) -> str:
-        if self.is_podman_container:
+        if self.is_distrobox_container:
             return ""
         return os.path.join(
             AtomsPathsUtils.get_atom_path(
@@ -346,14 +346,14 @@ done
 
     @property
     def root_path(self) -> str:
-        if self.is_podman_container:
+        if self.is_distrobox_container:
             return ""
         return os.path.join(self.fs_path, "root")
 
     @property
     def distribution(self) -> 'AtomDistribution':
-        if self.is_podman_container:
-            return AtomsDistributionsUtils.get_distribution_by_container_image(self.podman_container_image)
+        if self.is_distrobox_container:
+            return AtomsDistributionsUtils.get_distribution_by_container_image(self.container_image)
         return AtomsDistributionsUtils.get_distribution(self.distribution_id)
 
     @property
@@ -367,10 +367,10 @@ done
         ).strftime("%d %B, %Y %H:%M:%S")
 
     @property
-    def is_podman_container(self) -> bool:
-        return self.podman_container_id is not None
+    def is_distrobox_container(self) -> bool:
+        return self.container_id is not None
 
     def __str__(self):
-        if self.is_podman_container:
-            return f"Atom {self.name} (podman container)"
+        if self.is_distrobox_container:
+            return f"Atom {self.name} (distrobox)"
         return f"Atom: {self.name}"

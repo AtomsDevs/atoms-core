@@ -76,14 +76,14 @@ class PodmanWrapper:
         command = [self.__binary_path, "start", container_id]
         CommandUtils.run_command(command, allow_flatpak_host=True)
 
-    def destroy_container(self, container_id: str):
-        command = [self.__binary_path, "rm", "-f", container_id]
-        CommandUtils.run_command(command, allow_flatpak_host=True)
-
     def stop_container(self, container_id: str):
         command = [self.__binary_path, "kill", container_id]
         CommandUtils.check_call(
             command, allow_flatpak_host=True, ignore_errors=True)
+
+    def destroy_container(self, container_id: str):
+        command = [self.__binary_path, "rm", "-f", container_id]
+        CommandUtils.run_command(command, allow_flatpak_host=True)
     
     def new_container(self, name: str, image: str) -> str:
         # create new container for shell usage, entrypoint must be /bin/sh

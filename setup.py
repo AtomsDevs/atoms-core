@@ -9,7 +9,7 @@ setup(
     author='Mirko Brombin',
     author_email='send@mirko.pm',
     description='Atoms Core allows you to create and manage your own chroots'
-                'and podman containers.',
+                'and distrobox containers.',
     install_requires=[
         'orjson',
     ]

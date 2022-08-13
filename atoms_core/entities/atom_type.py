@@ -19,4 +19,5 @@ from enum import Enum
 
 class AtomType(Enum):
     ATOM_CHROOT = 0
-    PODMAN_CONTAINER = 1
+    # PODMAN_CONTAINER = 1
+    DISTROBOX_CONTAINER = 1
