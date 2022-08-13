@@ -43,8 +43,8 @@ class DistroboxWrapper:
         for line in output:
             _id, _name, _, _image = line.split("|")
             containers[_id] = {
-                "image": _image,
-                "name": _name,
+                "image": _image.strip(),
+                "name": _name.strip(),
                 "creation_date": datetime.datetime.now().isoformat(),  # TODO: send PR to implement this
             }
 
