@@ -210,7 +210,7 @@ class Atom:
             instance.client_bridge.exec_on_main(distrobox_fn, 0)
 
         try:
-            distrobox_container_id = DistroboxWrapper().new_container(name, container_image)
+            container_id = DistroboxWrapper().new_container(name, container_image)
         except AtomsFailToCreateContainer:
             if error_fn:
                 instance.client_bridge.exec_on_main(
@@ -298,7 +298,7 @@ done
 
     def destroy(self):
         if self.is_distrobox_container:
-            self.__distrobox_wrapper.destroy_container(self.distrobox_container_id)
+            self.__distrobox_wrapper.destroy_container(self.container_id)
             return
 
         # NOTE: might not be the best way to do this but shutil raises an
