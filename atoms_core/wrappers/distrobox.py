@@ -34,7 +34,8 @@ class DistroboxWrapper:
         containers = {}
         command = [
             self.__binary_path,
-            "list"
+            "list",
+            "--no-color"
         ]
 
         output = CommandUtils.run_command(command, output=True)\
