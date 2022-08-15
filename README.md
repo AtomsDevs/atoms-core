@@ -6,7 +6,7 @@ This is meant to be used by Atoms clients (e.g. [Atoms GTK](https://github.com/A
 [![CodeFactor](https://www.codefactor.io/repository/github/atomsdevs/atoms-core/badge)](https://www.codefactor.io/repository/github/atomsdevs/atoms-core)
 
 ## Dependencies
-Atoms COre only need the `orjson` python package.
+Atoms Core only need the `orjson` python package.
 
 ## Install
 ```bash
