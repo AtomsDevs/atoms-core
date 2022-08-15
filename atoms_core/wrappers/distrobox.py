@@ -28,7 +28,7 @@ class DistroboxWrapper:
         self.__binary_path = self.__find_binary_path()
 
     def __find_binary_path(self) -> str:
-        return CommandUtils.which("distrobox")
+        return CommandUtils.which("distrobox-wrapper")
 
     def get_containers(self) -> list:
         containers = {}
@@ -41,8 +41,11 @@ class DistroboxWrapper:
             .strip().split("\n")[1:]
 
         for line in output:
-            _id, _name, _, _image = line.split("|")
-            containers[_id] = {
+            _parts = line.split("|")
+            if len(_parts) < 4:
+                continue
+            _id, _name, _, _image = _parts
+            containers[_id.strip()] = {
                 "image": _image.strip(),
                 "name": _name.strip(),
                 "creation_date": datetime.datetime.now().isoformat(),  # TODO: send PR to implement this
@@ -54,9 +57,10 @@ class DistroboxWrapper:
         self,
         container_id: str,
         command: list = None,
-        working_directory: str = None
+        working_directory: str = None  # unimplmented
     ) -> list:
-        if command is None:
+        # return ["sh"]
+        if command is None or len(command) == 0:
             command = []
         else:
             command = ["--"] + command
