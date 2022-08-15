@@ -167,7 +167,8 @@ class CommandUtils:
         proc = subprocess.Popen(_command, stdout=subprocess.PIPE)
 
         if output:
-            return proc.communicate()[0].decode("utf-8")
+            res = proc.communicate()[0].decode("utf-8")
+            return CommandUtils.remove_formatting(res)
 
         if wait:
             proc.wait()
