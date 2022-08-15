@@ -25,7 +25,7 @@ class ClientBridge:
         self.client_name = client_name
         self.client_toolkit = client_toolkit
 
-    def exec_on_main(func, *args):
+    def exec_on_main(self, func, *args):
         """
         This method should be replaced by the client according to the 
         toolkit used (if needed).
