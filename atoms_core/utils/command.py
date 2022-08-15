@@ -16,12 +16,18 @@
 
 import re
 import os
+import copy
 import shutil
+import logging
 import subprocess
 import contextlib
 from typing import Union
+from functools import lru_cache
 
 from atoms_core.exceptions.common import AtomsNoBinaryFound
+
+
+logger = logging.getLogger("atoms.utils.command")
 
 
 class CommandUtils:
@@ -56,8 +62,11 @@ class CommandUtils:
                 CommandUtils.get_flatpak_command(["which", binary])
             )
             return proc.decode("utf-8").strip()
-        except FileNotFoundError:
-            raise AtomsNoBinaryFound(binary)
+        except (FileNotFoundError, AtomsNoBinaryFound):
+            return
+        except subprocess.CalledProcessError:
+            logger.warning("Atoms has no access to org.freedesktop.Flatpak")
+            return
 
     @staticmethod
     def which(binary: str, allow_flatpak_host: bool = False) -> str:
@@ -86,18 +95,22 @@ class CommandUtils:
         Credits: Martijn Pieters
                  <https://stackoverflow.com/a/14693789>
         """
-        ansi_escape = re.compile(r'''
-            \x1B  # ESC
-            (?:   # 7-bit C1 Fe (except CSI)
-                [@-Z\\-_]
-            |     # or [ for CSI, followed by a control sequence
-                \[
-                [0-?]*  # Parameter bytes
-                [ -/]*  # Intermediate bytes
-                [@-~]   # Final byte
-            )
-        ''', re.VERBOSE)
-        return ansi_escape.sub('', output)
+        _output = copy.copy(output)
+        try:
+            ansi_escape = re.compile(r'''
+                \x1B  # ESC
+                (?:   # 7-bit C1 Fe (except CSI)
+                    [@-Z\\-_]
+                |     # or [ for CSI, followed by a control sequence
+                    \[
+                    [0-?]*  # Parameter bytes
+                    [ -/]*  # Intermediate bytes
+                    [@-~]   # Final byte
+                )
+            ''', re.VERBOSE)
+            return ansi_escape.sub('', output)
+        except TypeError:
+            return _output
 
     @staticmethod
     def get_valid_command(command: list, allow_flatpak_host: bool = False) -> list:
