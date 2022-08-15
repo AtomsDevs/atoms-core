@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import os
 import shutil
 import subprocess
@@ -74,6 +75,29 @@ class CommandUtils:
         if allow_flatpak_host and CommandUtils.is_flatpak():
             return CommandUtils.flatpak_host_which(binary)
         return shutil.which(binary)
+    
+    @staticmethod
+    def remove_formatting(output: str) -> str:
+        """
+        Remove formatting from the output.
+
+        :param output: The output to remove formatting from.
+        
+        Credits: Martijn Pieters
+                 <https://stackoverflow.com/a/14693789>
+        """
+        ansi_escape = re.compile(r'''
+            \x1B  # ESC
+            (?:   # 7-bit C1 Fe (except CSI)
+                [@-Z\\-_]
+            |     # or [ for CSI, followed by a control sequence
+                \[
+                [0-?]*  # Parameter bytes
+                [ -/]*  # Intermediate bytes
+                [@-~]   # Final byte
+            )
+        ''', re.VERBOSE)
+        return ansi_escape.sub('', output)
 
     @staticmethod
     def get_valid_command(command: list, allow_flatpak_host: bool = False) -> list:
@@ -102,6 +126,7 @@ class CommandUtils:
             elif _type == "ext_bin":
                 _part = CommandUtils.which(_part, allow_flatpak_host=True)
 
+            _part = CommandUtils.remove_formatting(_part)
             _command.append(_part)
 
         if allow_flatpak_host and CommandUtils.is_flatpak():
