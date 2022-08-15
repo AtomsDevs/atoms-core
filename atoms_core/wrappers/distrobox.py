@@ -28,24 +28,26 @@ class DistroboxWrapper:
         self.__binary_path = self.__find_binary_path()
 
     def __find_binary_path(self) -> str:
-        return CommandUtils.which("distrobox-wrapper")
+        return CommandUtils.which("distrobox", allow_flatpak_host=True)
 
     def get_containers(self) -> list:
         containers = {}
         command = [
             self.__binary_path,
-            "list",
-            "--no-color"
+            "list"
         ]
 
-        output = CommandUtils.run_command(command, output=True)\
+        output = CommandUtils.run_command(command, output=True, allow_flatpak_host=True)\
             .strip().split("\n")[1:]
 
         for line in output:
             _parts = line.split("|")
-            if len(_parts) < 4:
-                continue
-            _id, _name, _, _image = _parts
+            
+            if len(_parts) == 4:
+                _id, _name, _, _image = _parts
+            elif len(_parts) == 5:
+                _id, _name, _, _image, _ = _parts
+
             containers[_id.strip()] = {
                 "image": _image.strip(),
                 "name": _name.strip(),
@@ -72,16 +74,16 @@ class DistroboxWrapper:
             container_id,
         ] + command
 
-        return CommandUtils.get_valid_command(command)
+        return CommandUtils.get_valid_command(command, allow_flatpak_host=True)
 
     def destroy_container(self, container_id: str, container_name: str):
         self.stop_container(container_id)
         command = [self.__binary_path, "rm", "-f", container_name]
-        CommandUtils.run_command(command)
+        CommandUtils.run_command(command, allow_flatpak_host=True)
 
     def stop_container(self, container_id: str):
         command = [self.__binary_path, "stop", "-f", container_id]
-        CommandUtils.run_command(command)
+        CommandUtils.run_command(command, allow_flatpak_host=True)
     
     def new_container(self, name: str, image: str) -> str:
         command = [
@@ -90,7 +92,7 @@ class DistroboxWrapper:
             "--name", name
         ]
         try:
-            CommandUtils.run_command(command, output=True, wait=True)
+            CommandUtils.run_command(command, output=True, wait=True, allow_flatpak_host=True)
         except Exception as e:
             # TODO: improve error message
             raise AtomsFailToCreateContainer(str(e))
