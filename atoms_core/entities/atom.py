@@ -369,6 +369,12 @@ done
     @property
     def is_distrobox_container(self) -> bool:
         return self.container_id is not None
+    
+    @property
+    def aid(self) -> str:
+        if self.is_distrobox_container:
+            return self.container_id
+        return self.relative_path
 
     def __str__(self):
         if self.is_distrobox_container:
