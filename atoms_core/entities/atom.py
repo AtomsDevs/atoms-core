@@ -440,6 +440,7 @@ done
             mounts.append(("/usr/share/fonts", "/usr/share/fonts"))
         if self.bind_extra_mounts:
             mounts += self.bind_extra_mounts
+        return mounts
 
     def __str__(self):
         if self.is_distrobox_container:
