@@ -51,7 +51,11 @@ class Atom:
         creation_date: str = None,
         update_date: str = None,
         container_id: str = None,
-        container_image: str = None
+        container_image: str = None,
+        bind_themes: bool = False,
+        bind_icons: bool = False,
+        bind_fonts: bool = False,
+        bind_extra_mounts: list = None,
     ):
         if update_date is None and container_id:
             update_date = datetime.datetime.now().isoformat()
@@ -66,10 +70,23 @@ class Atom:
         self.update_date = update_date
         self.container_id = container_id
         self.container_image = container_image
+        self.bind_themes = bind_themes
+        self.bind_icons = bind_icons
+        self.bind_fonts = bind_fonts
+        self.bind_extra_mounts = bind_extra_mounts or []
         self.__proot_wrapper = ProotWrapper()
 
         if container_id:
             self.__distrobox_wrapper = DistroboxWrapper()
+        
+    @staticmethod
+    def get_extra_default_options():
+        return {
+            "bindThemes": False,
+            "bindIcons": False,
+            "bindFonts": False,
+            "bindExtraMounts": []
+        }
 
     @classmethod
     def from_dict(cls, instance: "AtomsInstance", data: dict) -> "Atom":
@@ -81,13 +98,22 @@ class Atom:
             data.get("relativePath")
         ]:
             raise AtomsWrongAtomData(data)
+
+        for key, val in Atom.get_extra_default_options().items():
+            if key not in data:
+                data[key] = val
+
         return cls(
             instance,
             data['name'],
             data['distributionId'],
             data['relativePath'],
             data['creationDate'],
-            data['updateDate']
+            data['updateDate'],
+            bind_themes=data['bindThemes'],
+            bind_icons=data['bindIcons'],
+            bind_fonts=data['bindFonts'],
+            bind_extra_mounts=data['bindExtraMounts']
         )
 
     @classmethod
@@ -158,8 +184,14 @@ class Atom:
             instance.config, relative_path)
         chroot_path = os.path.join(atom_path, "chroot")
         root_path = os.path.join(chroot_path, "root")
-        atom = cls(instance, name, distribution.distribution_id,
-                   relative_path, date)
+        atom = cls(
+            instance, name, distribution.distribution_id,
+            relative_path, date,
+            bind_themes=False, 
+            bind_icons=False, 
+            bind_fonts=False, 
+            bind_extra_mounts=[]
+        )
         os.makedirs(chroot_path)
 
         if config_fn:
@@ -243,7 +275,11 @@ class Atom:
             "distributionId": self.distribution_id,
             "relativePath": self.relative_path,
             "creationDate": self.creation_date,
-            "updateDate": self.update_date
+            "updateDate": self.update_date,
+            "bindThemes": self.bind_themes,
+            "bindIcons": self.bind_icons,
+            "bindFonts": self.bind_fonts,
+            "bindExtraMounts": self.bind_extra_mounts
         }
 
     def save(self):
@@ -273,7 +309,8 @@ class Atom:
             environment = []
 
         _command = self.__proot_wrapper.get_proot_command_for_chroot(
-            self.fs_path, command)
+            self.fs_path, command, self.bind_mounts
+        )
         return _command, environment, self.root_path
 
     def __generate_distrobox_command(self, command: list, environment: list = None) -> tuple:
@@ -379,6 +416,18 @@ done
         if self.is_distrobox_container:
             return self.container_id
         return self.relative_path
+
+    @property
+    def bind_mounts(self) -> list:
+        mounts = []
+        if self.bind_themes:
+            mounts.append(("/usr/share/themes", "/usr/share/themes"))
+        if self.bind_icons:
+            mounts.append(("/usr/share/icons", "/usr/share/icons"))
+        if self.bind_fonts:
+            mounts.append(("/usr/share/fonts", "/usr/share/fonts"))
+        if self.bind_extra_mounts:
+            mounts += self.bind_extra_mounts
 
     def __str__(self):
         if self.is_distrobox_container:

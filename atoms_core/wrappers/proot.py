@@ -37,7 +37,8 @@ class ProotWrapper:
         self,
         chroot_path: str,
         command: list = None,
-        working_directory: str = None
+        working_directory: str = None,
+        bind_mounts: list = None,
     ) -> list:
         if "DEV_BASH" in os.environ:
             return CommandUtils.get_valid_command([("bash", "bin")])
@@ -53,7 +54,12 @@ class ProotWrapper:
             "-i", f"HOME={Path.home()}", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}",
             self.__binary_path,
             "-w", working_directory,
-            "-i", f"{os.getuid()}:{os.getgid()}",
+
+            # the following pass the current user and group id to the chroot
+            # it's currently disabled as I'm trying to figure the user as root
+            # "-i", f"{os.getuid()}:{os.getgid()}",
+
+            "-0",
             "-r", chroot_path,
             "-b", "/etc/host.conf:/etc/host.conf",
             "-b", "/etc/hosts:/etc/hosts",
@@ -66,40 +72,47 @@ class ProotWrapper:
             "-b", f"{Path.home()}:{Path.home()}",
             "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
             "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib/xorg/modules/dri",
-            "-b", "/usr/share/themes:/usr/share/themes",
-            "-b", "/usr/share/fonts:/usr/share/fonts",
-            "-b", "/usr/share/icons:/usr/share/icons",
+
+            # the following are handled by the Atom instance
+            #"-b", "/usr/share/themes:/usr/share/themes",
+            #"-b", "/usr/share/fonts:/usr/share/fonts",
+            #"-b", "/usr/share/icons:/usr/share/icons",
         ]
+
+        if bind_mounts is not None:
+            for bind_mount in bind_mounts:
+                _command.append("-b")
+                _command.append(bind_mount)
         
         # passwd and group cannot be binded, this will replace the existing
         # files, invalidating users/groups made by the user in the chroot
         # here we make a temporary copy of the files. merge them and bind
         # the temporary instead of the original
         temp_path = tempfile.gettempdir()
-        chroot_passwd = os.path.join(chroot_path, "etc/passwd")
+        # chroot_passwd = os.path.join(chroot_path, "etc/passwd")
         chroot_group = os.path.join(chroot_path, "etc/group")
-        system_passwd = os.path.join("/", "etc/passwd")
+        # system_passwd = os.path.join("/", "etc/passwd")
         system_group = os.path.join("/", "etc/group")
-        temp_passwd = os.path.join(temp_path, f"passwd_{uuid.uuid4()}")
+        # temp_passwd = os.path.join(temp_path, f"passwd_{uuid.uuid4()}")
         temp_group = os.path.join(temp_path, f"group_{uuid.uuid4()}")
 
-        system_passwd_rows = []
+        # system_passwd_rows = []
         system_group_rows = []
 
-        with open(system_passwd, "r") as f:
-            system_passwd_rows = f.readlines()
+        # with open(system_passwd, "r") as f:
+        #     system_passwd_rows = f.readlines()
 
         with open(system_group, "r") as f:
             system_group_rows = f.readlines()
             
-        shutil.copyfile(chroot_passwd, temp_passwd)
+        # shutil.copyfile(chroot_passwd, temp_passwd)
         shutil.copyfile(chroot_group, temp_group)
 
-        with open(temp_passwd, "a+") as f:
-            rows = f.readlines()
-            for row in system_passwd_rows:
-                if row not in rows:
-                    f.write(row)
+        # with open(temp_passwd, "a+") as f:
+        #     rows = f.readlines()
+        #     for row in system_passwd_rows:
+        #         if row not in rows:
+        #             f.write(row)
 
         with open(temp_group, "a+") as f:
             rows = f.readlines()
@@ -108,7 +121,8 @@ class ProotWrapper:
                     f.write(row)
 
         command = _command + [
-            "-b", f"{temp_passwd}:/etc/passwd",
+            # passwd disabled, I'm trying to make the user root of the chroot
+            # "-b", f"{temp_passwd}:/etc/passwd",
             "-b", f"{temp_group}:/etc/group",
         ] + command
 
