@@ -65,5 +65,4 @@ class ProotWrapper:
             "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
             "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib/xorg/modules/dri",
         ] + command
-        print(" ".join(CommandUtils.get_valid_command(command)))
         return CommandUtils.get_valid_command(command)
