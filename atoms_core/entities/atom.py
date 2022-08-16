@@ -309,7 +309,7 @@ class Atom:
             environment = []
 
         _command = self.__proot_wrapper.get_proot_command_for_chroot(
-            self.fs_path, command, self.bind_mounts
+            self.fs_path, command, bind_mounts=self.bind_mounts
         )
         return _command, environment, self.root_path
 

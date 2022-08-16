@@ -81,8 +81,9 @@ class ProotWrapper:
 
         if bind_mounts is not None:
             for bind_mount in bind_mounts:
+                host_mount, chroot_mount = bind_mount
                 _command.append("-b")
-                _command.append(bind_mount)
+                _command.append(f"{host_mount}:{chroot_mount}")
         
         # passwd and group cannot be binded, this will replace the existing
         # files, invalidating users/groups made by the user in the chroot
