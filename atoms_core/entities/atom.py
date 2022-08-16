@@ -359,6 +359,10 @@ done
     @property
     def enter_command(self) -> list:
         return self.generate_command([])
+    
+    @property
+    def untracked_enter_command(self) -> list:
+        return self.generate_command([], track_exit=False)
 
     @property
     def formatted_update_date(self) -> str:
