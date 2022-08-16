@@ -46,6 +46,9 @@ class AtomsBackend:
 
         if self.__distrobox_support and self.has_distrobox_support:
             atoms.update(self.__list_distrobox_atoms())
+        
+        if "DEV_BASH" in os.environ:
+            atoms["DEV_BASH"] = Atom.new_system_shell(self.__instance)
 
         return atoms
 

@@ -30,9 +30,11 @@ from atoms_core.exceptions.podman import AtomsFailToCreateContainer
 from atoms_core.utils.paths import AtomsPathsUtils
 from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.utils.distribution import AtomsDistributionsUtils
+from atoms_core.utils.command import CommandUtils
 from atoms_core.utils.file import FileUtils
 from atoms_core.wrappers.proot import ProotWrapper
 from atoms_core.wrappers.distrobox import DistroboxWrapper
+from atoms_core.entities.distributions.host import Host
 
 
 class Atom:
@@ -52,12 +54,13 @@ class Atom:
         update_date: str = None,
         container_id: str = None,
         container_image: str = None,
+        system_shell: bool = False,
         bind_themes: bool = False,
         bind_icons: bool = False,
         bind_fonts: bool = False,
         bind_extra_mounts: list = None,
     ):
-        if update_date is None and container_id:
+        if update_date is None and (container_id or system_shell):
             update_date = datetime.datetime.now().isoformat()
         elif update_date is None:
             update_date = creation_date
@@ -70,6 +73,7 @@ class Atom:
         self.update_date = update_date
         self.container_id = container_id
         self.container_image = container_image
+        self.__system_shell = system_shell
         self.bind_themes = bind_themes
         self.bind_icons = bind_icons
         self.bind_fonts = bind_fonts
@@ -268,6 +272,10 @@ class Atom:
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
 
         return atom
+    
+    @classmethod
+    def new_system_shell(cls, instance: 'AtomsInstance'):
+        return cls(instance, "system-shell", system_shell=True)
 
     def to_dict(self) -> dict:
         return {
@@ -283,7 +291,7 @@ class Atom:
         }
 
     def save(self):
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             raise AtomsCannotSavePodmanContainers()
 
         path = os.path.join(self.path, "atom.json")
@@ -295,6 +303,8 @@ class Atom:
         if self.is_distrobox_container:
             command, environment, working_directory = self.__generate_distrobox_command(
                 command, environment)
+        elif self.__system_shell:
+            command, environment, working_directory = self.__generate_system_shell_command()
         else:
             command, environment, working_directory = self.__generate_proot_command(
                 command, environment)
@@ -320,6 +330,10 @@ class Atom:
         _command = self.__distrobox_wrapper.get_distrobox_command_for_container(
             self.container_id, command)
         return _command, environment, self.root_path
+    
+    def __generate_system_shell_command(self) -> tuple:
+        _command = [os.environ["SHELL"]]
+        return _command, [], "/"
 
     def __get_launcher_script(self) -> str:
         script = """#!/bin/bash
@@ -334,7 +348,7 @@ done
             return f.name
 
     def destroy(self):
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             self.__distrobox_wrapper.destroy_container(self.container_id, self.name)
             return
 
@@ -348,7 +362,7 @@ done
         FileUtils.native_rm(self.path)
 
     def kill(self):
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             self.__distrobox_wrapper.stop_container(self.container_id)
             return
 
@@ -357,7 +371,7 @@ done
             pid.kill()
 
     def rename(self, new_name: str):
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             raise AtomsCannotRenamePodmanContainers()
         self.name = new_name
         self.save()
@@ -379,13 +393,13 @@ done
 
     @property
     def path(self) -> str:
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             return ""
         return AtomsPathsUtils.get_atom_path(self._instance.config, self.relative_path)
 
     @property
     def fs_path(self) -> str:
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             return ""
         return os.path.join(
             AtomsPathsUtils.get_atom_path(
@@ -395,7 +409,7 @@ done
 
     @property
     def root_path(self) -> str:
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             return ""
         return os.path.join(self.fs_path, "root")
 
@@ -403,6 +417,8 @@ done
     def distribution(self) -> 'AtomDistribution':
         if self.is_distrobox_container:
             return AtomsDistributionsUtils.get_distribution_by_container_image(self.container_image)
+        if self.__system_shell:
+            return Host()
         return AtomsDistributionsUtils.get_distribution(self.distribution_id)
 
     @property
@@ -422,10 +438,14 @@ done
     @property
     def is_distrobox_container(self) -> bool:
         return self.container_id is not None
+
+    @property
+    def is_system_shell(self) -> bool:
+        return self.__system_shell
     
     @property
     def aid(self) -> str:
-        if self.is_distrobox_container:
+        if self.is_distrobox_container or self.__system_shell:
             return self.container_id
         return self.relative_path
 
@@ -445,4 +465,6 @@ done
     def __str__(self):
         if self.is_distrobox_container:
             return f"Atom {self.name} (distrobox)"
+        elif self.is_system_shell:
+            return f"Atom {self.name} (system shell)"
         return f"Atom: {self.name}"
