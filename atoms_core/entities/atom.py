@@ -364,6 +364,18 @@ done
 
     def stop_distrobox_container(self):
         self.__distrobox_wrapper.stop_container(self.container_id)
+    
+    def set_bind_themes(self, status: bool):
+        self.bind_themes = status
+        self.save()
+
+    def set_bind_icons(self, status: bool):
+        self.bind_icons = status
+        self.save()
+
+    def set_bind_fonts(self, status: bool):
+        self.bind_fonts = status
+        self.save()
 
     @property
     def path(self) -> str:
