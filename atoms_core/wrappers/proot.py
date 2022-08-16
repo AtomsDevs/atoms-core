@@ -15,7 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import uuid
 import shutil
+import tempfile
 import subprocess
 from pathlib import Path
 
@@ -46,12 +48,12 @@ class ProotWrapper:
         if working_directory is None:
             working_directory = "/"
 
-        command = [
+        _command = [
             ("env", "ext_bin"),
             "-i", f"HOME={Path.home()}", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}",
             self.__binary_path,
             "-w", working_directory,
-            "-0",
+            "-i", f"{os.getuid()}:{os.getgid()}",
             "-r", chroot_path,
             "-b", "/etc/host.conf:/etc/host.conf",
             "-b", "/etc/hosts:/etc/hosts",
@@ -64,5 +66,50 @@ class ProotWrapper:
             "-b", f"{Path.home()}:{Path.home()}",
             "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
             "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib/xorg/modules/dri",
+            "-b", "/usr/share/themes:/usr/share/themes",
+            "-b", "/usr/share/fonts:/usr/share/fonts",
+            "-b", "/usr/share/icons:/usr/share/icons",
+        ]
+        
+        # passwd and group cannot be binded, this will replace the existing
+        # files, invalidating users/groups made by the user in the chroot
+        # here we make a temporary copy of the files. merge them and bind
+        # the temporary instead of the original
+        temp_path = tempfile.gettempdir()
+        chroot_passwd = os.path.join(chroot_path, "etc/passwd")
+        chroot_group = os.path.join(chroot_path, "etc/group")
+        system_passwd = os.path.join("/", "etc/passwd")
+        system_group = os.path.join("/", "etc/group")
+        temp_passwd = os.path.join(temp_path, f"passwd_{uuid.uuid4()}")
+        temp_group = os.path.join(temp_path, f"group_{uuid.uuid4()}")
+
+        system_passwd_rows = []
+        system_group_rows = []
+
+        with open(system_passwd, "r") as f:
+            system_passwd_rows = f.readlines()
+
+        with open(system_group, "r") as f:
+            system_group_rows = f.readlines()
+            
+        shutil.copyfile(chroot_passwd, temp_passwd)
+        shutil.copyfile(chroot_group, temp_group)
+
+        with open(temp_passwd, "a+") as f:
+            rows = f.readlines()
+            for row in system_passwd_rows:
+                if row not in rows:
+                    f.write(row)
+
+        with open(temp_group, "a+") as f:
+            rows = f.readlines()
+            for row in system_group_rows:
+                if row not in rows:
+                    f.write(row)
+
+        command = _command + [
+            "-b", f"{temp_passwd}:/etc/passwd",
+            "-b", f"{temp_group}:/etc/group",
         ] + command
+
         return CommandUtils.get_valid_command(command)
