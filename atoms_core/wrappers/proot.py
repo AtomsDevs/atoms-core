@@ -51,7 +51,15 @@ class ProotWrapper:
 
         _command = [
             ("env", "ext_bin"),
-            "-i", f"HOME={Path.home()}", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}",
+            "-i", f"HOME={Path.home()}", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}"
+        ]
+
+        # PATH is unset at this point, no binaries will be found, so we set it
+        # to the default paths if the a command is provided
+        if command:
+            _command += ["PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"]
+        
+        _command += [
             self.__binary_path,
             "-w", working_directory,
 
