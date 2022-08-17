@@ -42,3 +42,12 @@ class AtomsCannotRenamePodmanContainers(AtomsException):
 
     def __init__(self, data: dict):
         super().__init__("Atoms cannot rename podman containers: {}".format(str(data)))
+
+
+class AtomsConfigFileNotFound(AtomsException):
+    """
+    Exception raised when the config file is not found.
+    """
+
+    def __init__(self, path: str):
+        super().__init__("Atom configuration file not found: {}".format(path))

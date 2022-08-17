@@ -15,7 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import logging
 
+from atoms_core.exceptions.atom import AtomsConfigFileNotFound
 from atoms_core.entities.config import AtomsConfig
 from atoms_core.entities.atom import Atom
 from atoms_core.entities.atom_type import AtomType
@@ -23,6 +25,9 @@ from atoms_core.entities.instance import AtomsInstance
 from atoms_core.utils.image import AtomsImageUtils
 from atoms_core.wrappers.client_bridge import ClientBridge
 from atoms_core.wrappers.distrobox import DistroboxWrapper
+
+
+logger = logging.getLogger("atoms.core")
 
 
 class AtomsBackend:
@@ -42,7 +47,11 @@ class AtomsBackend:
         atoms = {}
         for atom in os.listdir(self.__config.atoms_path):
             if atom.endswith(".atom"):
-                atoms[atom] = Atom.load(self.__instance, atom)
+                try:
+                    atoms[atom] = Atom.load(self.__instance, atom)
+                except AtomsConfigFileNotFound:
+                    logger.warning("Atom configuration file not found with path: {}".format(atom))
+                    continue
 
         if self.__distrobox_support and self.has_distrobox_support:
             atoms.update(self.__list_distrobox_atoms())

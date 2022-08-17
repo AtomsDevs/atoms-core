@@ -22,7 +22,7 @@ import tempfile
 import datetime
 import importlib
 
-from atoms_core.exceptions.atom import AtomsWrongAtomData
+from atoms_core.exceptions.atom import AtomsWrongAtomData, AtomsConfigFileNotFound
 from atoms_core.exceptions.download import AtomsHashMissmatchError
 from atoms_core.exceptions.image import AtomsFailToDownloadImage
 from atoms_core.exceptions.distribution import AtomsUnreachableRemote
@@ -124,8 +124,11 @@ class Atom:
     def load(cls, instance: "AtomsInstance", relative_path: str) -> "Atom":
         path = os.path.join(AtomsPathsUtils.get_atom_path(
             instance.config, relative_path), "atom.json")
-        with open(path, "r") as f:
-            data = orjson.loads(f.read())
+        try:
+            with open(path, "r") as f:
+                data = orjson.loads(f.read())
+        except FileNotFoundError:
+            raise AtomsConfigFileNotFound(path)
         return cls.from_dict(instance, data)
 
     @classmethod
