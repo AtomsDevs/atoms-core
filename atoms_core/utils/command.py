@@ -79,10 +79,6 @@ class CommandUtils:
         """
         if allow_flatpak_host and CommandUtils.is_flatpak():
             return CommandUtils.flatpak_host_which(binary)
-        else:
-            return shutil.which(binary)
-        if allow_flatpak_host and CommandUtils.is_flatpak():
-            return CommandUtils.flatpak_host_which(binary)
         return shutil.which(binary)
     
     @staticmethod

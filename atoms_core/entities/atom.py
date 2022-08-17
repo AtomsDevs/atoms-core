@@ -33,6 +33,7 @@ from atoms_core.utils.distribution import AtomsDistributionsUtils
 from atoms_core.utils.command import CommandUtils
 from atoms_core.utils.file import FileUtils
 from atoms_core.wrappers.proot import ProotWrapper
+from atoms_core.wrappers.servicectl import ServicectlWrapper
 from atoms_core.wrappers.distrobox import DistroboxWrapper
 from atoms_core.entities.distributions.host import Host
 
@@ -187,8 +188,7 @@ class Atom:
 
         date = datetime.datetime.now().isoformat()
         relative_path = str(uuid.uuid4()) + ".atom"
-        atom_path = AtomsPathsUtils.get_atom_path(
-            instance.config, relative_path)
+        atom_path = AtomsPathsUtils.get_atom_path(instance.config, relative_path)
         chroot_path = os.path.join(atom_path, "chroot")
         root_path = os.path.join(chroot_path, "root")
         atom = cls(
@@ -200,6 +200,9 @@ class Atom:
             bind_extra_mounts=[]
         )
         os.makedirs(chroot_path)
+
+        # install servicectl to be able to manage services in the chroot
+        ServicectlWrapper().install_to_path(os.path.join(atom.fs_path, "/usr/local/bin"))
 
         if config_fn:
             instance.client_bridge.exec_on_main(config_fn, 1)

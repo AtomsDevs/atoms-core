@@ -106,7 +106,6 @@ class DistroboxWrapper:
             "A container with name '{}' was not found after creation. Somethings goes wrong.".format(name)
         )
 
-
     @property
     def is_supported(self) -> bool:
         return self.__binary_path is not None
