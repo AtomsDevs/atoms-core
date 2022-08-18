@@ -68,6 +68,10 @@ class AtomDistribution:
         return self.remote_hash_structure.format(release, architecture)
 
     def get_image_name(self, architecture: str, release: str) -> str:
+        _repr = f"{self.distribution_id}-{release}-{architecture}"
+        return _repr.replace(".", "-").replace("_", "-").replace(" ", "-").lower()
+
+    def get_remote_image_name(self, architecture: str, release: str) -> str:
         remote = self.get_remote(architecture, release)
         return os.path.basename(remote)
 
@@ -84,7 +88,7 @@ class AtomDistribution:
         content = response.text.split("\n")
         for line in content:
             _hash, _file = re.split(r"\s+", line, maxsplit=1)
-            if self.get_image_name(architecture, release) in _file:
+            if self.get_remote_image_name(architecture, release) in _file:
                 return _hash.strip()
 
         raise ValueError(f"Unknown check_type method: {check_type}")

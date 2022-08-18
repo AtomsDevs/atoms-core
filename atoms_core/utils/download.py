@@ -41,7 +41,8 @@ class DownloadUtils:
         file: str,
         func: callable = None,
         hash_value: str = None,
-        hash_type: str = None
+        hash_type: str = None,
+        rename: str = None
     ):
         self.__instance = instance
         self.start_time = None
@@ -50,6 +51,7 @@ class DownloadUtils:
         self.func = func
         self.hash_value = hash_value
         self.hash_type = hash_type
+        self.rename = rename
 
     def download(self) -> bool:
         """Start the download."""
@@ -94,6 +96,10 @@ class DownloadUtils:
                 logger.error(
                     f"Download failed! The downloaded file is corrupted.\n\tExpected {self.hash_value} got {_hash}.")
                 raise AtomsHashMissmatchError()
+        
+        if self.rename:
+            os.rename(self.file, os.path.join(os.path.dirname(self.file), self.rename))
+
         return True
 
     def __progress(self, count, block_size, total_size):
