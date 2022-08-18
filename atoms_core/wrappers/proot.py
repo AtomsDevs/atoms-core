@@ -73,6 +73,8 @@ class ProotWrapper:
             "-b", "/etc/hosts:/etc/hosts",
             "-b", "/etc/nsswitch.conf:/etc/nsswitch.conf",
             "-b", "/etc/resolv.conf:/etc/resolv.conf",
+            "-b", "/etc/timezone:/etc/timezone",
+            "-b", "/etc/localtime:/etc/localtime",
             "-b", "/dev:/dev",
             "-b", "/sys:/sys",
             "-b", "/proc:/proc",
