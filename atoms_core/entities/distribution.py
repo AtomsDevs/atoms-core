@@ -62,6 +62,9 @@ class AtomDistribution:
         return self.remote_structure.format(release, architecture)
 
     def get_remote_hash(self, architecture: str, release: str) -> str:
+        if self.remote_hash_structure is None:
+            return
+            
         return self.remote_hash_structure.format(release, architecture)
 
     def get_image_name(self, architecture: str, release: str) -> str:
@@ -69,6 +72,9 @@ class AtomDistribution:
         return os.path.basename(remote)
 
     def read_remote_hash(self, architecture: str, release: str) -> str:
+        if self.remote_hash_structure is None:
+            return
+
         remote_hash = self.get_remote_hash(architecture, release)
         response = requests.get(remote_hash)
 
