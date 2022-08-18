@@ -32,6 +32,8 @@ class AtomsDistributionsUtils:
             return Ubuntu()
         if distribution_id == "fedora":
             return Fedora()
+        if distribution_id == "almalinux":
+            return AlmaLinux()
 
         # Experimental images
         if distribution_id == "archlinux":  # pacman broken
@@ -58,6 +60,7 @@ class AtomsDistributionsUtils:
             AlpineLinux(),
             Ubuntu(),
             Fedora(),
+            AlmaLinux()
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
