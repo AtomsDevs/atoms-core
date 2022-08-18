@@ -38,6 +38,8 @@ class AtomsDistributionsUtils:
             return RockyLinux()
         if distribution_id == "centos":
             return Centos()
+        if distribution_id == "voidlinux":
+            return VoidLinux()
 
         # Experimental images
         if distribution_id == "archlinux":  # pacman broken
@@ -67,6 +69,7 @@ class AtomsDistributionsUtils:
             AlmaLinux(),
             RockyLinux(),
             Centos(),
+            VoidLinux(),
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
