@@ -51,7 +51,7 @@ class ProotWrapper:
 
         _command = [
             ("env", "ext_bin"),
-            "-i", f"HOME={Path.home()}", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}"
+            "-i", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}"
         ]
 
         # PATH is unset at this point, no binaries will be found, so we set it
@@ -99,25 +99,25 @@ class ProotWrapper:
         # files, invalidating users/groups made by the user in the chroot
         # here we make a temporary copy of the files. merge them and bind
         # the temporary instead of the original
-        temp_path = tempfile.gettempdir()
+        # temp_path = tempfile.gettempdir()
         # chroot_passwd = os.path.join(chroot_path, "etc/passwd")
-        chroot_group = os.path.join(chroot_path, "etc/group")
+        # chroot_group = os.path.join(chroot_path, "etc/group")
         # system_passwd = os.path.join("/", "etc/passwd")
-        system_group = os.path.join("/", "etc/group")
+        # system_group = os.path.join("/", "etc/group")
         # temp_passwd = os.path.join(temp_path, f"passwd_{uuid.uuid4()}")
-        temp_group = os.path.join(temp_path, f"group_{uuid.uuid4()}")
+        # temp_group = os.path.join(temp_path, f"group_{uuid.uuid4()}")
 
         # system_passwd_rows = []
-        system_group_rows = []
+        # system_group_rows = []
 
         # with open(system_passwd, "r") as f:
         #     system_passwd_rows = f.readlines()
 
-        with open(system_group, "r") as f:
-            system_group_rows = f.readlines()
+        # with open(system_group, "r") as f:
+            # system_group_rows = f.readlines()
             
         # shutil.copyfile(chroot_passwd, temp_passwd)
-        shutil.copyfile(chroot_group, temp_group)
+        # shutil.copyfile(chroot_group, temp_group)
 
         # with open(temp_passwd, "a+") as f:
         #     rows = f.readlines()
@@ -125,16 +125,18 @@ class ProotWrapper:
         #         if row not in rows:
         #             f.write(row)
 
-        with open(temp_group, "a+") as f:
-            rows = f.readlines()
-            for row in system_group_rows:
-                if row not in rows:
-                    f.write(row)
+        # with open(temp_group, "a+") as f:
+            # rows = f.readlines()
+            # for row in system_group_rows:
+                # if row not in rows:
+                    # f.write(row)
 
-        command = _command + [
+        # command = _command + [
             # passwd disabled, I'm trying to make the user root of the chroot
             # "-b", f"{temp_passwd}:/etc/passwd",
-            "-b", f"{temp_group}:/etc/group",
-        ] + command
+            # "-b", f"{temp_group}:/etc/group",
+        # ] + command
+
+        command = _command + command
 
         return CommandUtils.get_valid_command(command)
