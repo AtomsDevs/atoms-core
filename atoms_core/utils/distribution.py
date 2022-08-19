@@ -42,6 +42,8 @@ class AtomsDistributionsUtils:
             return VoidLinux()
         if distribution_id == "debian":
             return Debian()
+        if distribution_id == "opensuse":
+            return OpenSuse()
 
         # Experimental images
         if distribution_id == "archlinux":  # pacman broken
@@ -73,6 +75,7 @@ class AtomsDistributionsUtils:
             Centos(),
             VoidLinux(),
             Debian(),
+            OpenSuse(),
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
