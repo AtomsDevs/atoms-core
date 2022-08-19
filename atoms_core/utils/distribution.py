@@ -44,6 +44,8 @@ class AtomsDistributionsUtils:
             return Debian()
         if distribution_id == "opensuse":
             return OpenSuse()
+        if distribution_id == "gentoo":
+            return Gentoo()
 
         # Experimental images
         if distribution_id == "archlinux":  # pacman broken
@@ -76,6 +78,7 @@ class AtomsDistributionsUtils:
             VoidLinux(),
             Debian(),
             OpenSuse(),
+            Gentoo(),
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
