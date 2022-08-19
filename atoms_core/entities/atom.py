@@ -229,9 +229,8 @@ class Atom:
             sources = sources.replace("deb-src ", "deb-src [trusted=yes] ")
             with open(os.path.join(chroot_path, "etc/apt/sources.list"), "w") as f:
                 f.write(sources)
-        shutil.copy2("/etc/resolv.conf",
-                     os.path.join(chroot_path, "etc/resolv.conf"))
         atom.save()
+        
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
 
