@@ -44,10 +44,7 @@ class Ubuntu(AtomDistribution):
             sources = sources.replace("deb-src ", "deb-src [trusted=yes] ")
             with open(os.path.join(chroot, "etc/apt/sources.list"), "w") as f:
                 f.write(sources)
-        
+
         # workaround Code:NO_APT_CHWN_PERM
-        with open(os.path.join(chroot, "etc/passwd"), "r") as f:
-            passwd = f.read()
-            passwd = passwd.replace("_apt:x:", "#_apt:x:")
-            with open(os.path.join(chroot, "etc/passwd"), "w") as f:
-                f.write(passwd)
+        with open(os.path.join(chroot, "etc/apt/apt.conf.d/01atom"), "w") as f:
+            f.write("APT::Sandbox::User \"root\";")
