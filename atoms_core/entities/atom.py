@@ -25,7 +25,7 @@ import importlib
 from atoms_core.exceptions.atom import AtomsWrongAtomData, AtomsConfigFileNotFound
 from atoms_core.exceptions.download import AtomsHashMissmatchError
 from atoms_core.exceptions.image import AtomsFailToDownloadImage
-from atoms_core.exceptions.distribution import AtomsUnreachableRemote
+from atoms_core.exceptions.distribution import AtomsUnreachableRemote, AtomsMisconfiguredDistribution
 from atoms_core.exceptions.podman import AtomsFailToCreateContainer
 from atoms_core.utils.paths import AtomsPathsUtils
 from atoms_core.utils.image import AtomsImageUtils
