@@ -227,16 +227,6 @@ class Atom:
 
         # run post unpack if any
         distribution.post_unpack(chroot_path)
-
-        # workaround for unsigned repo in ubuntu (need to investigate the cause)
-        # TODO: move to post_unpack
-        if distribution.distribution_id == "ubuntu":
-            with open(os.path.join(chroot_path, "etc/apt/sources.list"), "r") as f:
-                sources = f.read()
-            sources = sources.replace("deb ", "deb [trusted=yes] ")
-            sources = sources.replace("deb-src ", "deb-src [trusted=yes] ")
-            with open(os.path.join(chroot_path, "etc/apt/sources.list"), "w") as f:
-                f.write(sources)
         atom.save()
         
         if finalizing_fn:
