@@ -56,8 +56,10 @@ class ProotWrapper:
             "HOME=/root",
             "TMPDIR=/tmp",
             f"DISPLAY={os.environ['DISPLAY']}",
-            # "PROOT_NO_SECCOMP=1",
         ]
+
+        if "ATOMS_NO_SECCOMP" in os.environ:
+            _command.append("PROOT_NO_SECCOMP=1")
 
         # PATH is unset at this point, no binaries will be found, so we set it
         # to the default paths if the a command is provided
