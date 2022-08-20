@@ -47,4 +47,5 @@ class Ubuntu(AtomDistribution):
 
         # workaround Code:NO_APT_CHWN_PERM
         with open(os.path.join(chroot, "etc/apt/apt.conf.d/01atom"), "w") as f:
+            f.write("APT::Sandbox \"0\";")
             f.write("APT::Sandbox::User \"root\";")
