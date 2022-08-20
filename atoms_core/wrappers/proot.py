@@ -50,7 +50,7 @@ class ProotWrapper:
             working_directory = "/"
 
         _command = [
-            ("env", "ext_bin"),
+            ("env", "bin"),
             "-i", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}"
         ]
 
