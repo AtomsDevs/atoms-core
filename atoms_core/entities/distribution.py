@@ -17,7 +17,10 @@
 
 import os
 import re
+import uuid
 import requests
+import tempfile
+import subprocess
 import shlex
 
 from atoms_core.exceptions.distribution import AtomsUnreachableRemote, AtomsMisconfiguredDistribution
@@ -42,7 +45,7 @@ class AtomDistribution:
         remote_hash_type: str,
         architectures: dict,
         root: str,
-        container_image_name: str
+        container_image_name: str,
     ):
         self.distribution_id = distribution_id
         self.name = name
@@ -99,3 +102,31 @@ class AtomDistribution:
 
     def is_container_image(self, image: str) -> bool:
         return self.container_image_name in image
+    
+    def post_unpack(self, chroot: str):
+        pass
+    
+    def _download_resource(self, url: str):
+        temp_path = tempfile.gettempdir()
+        temp_resource_folder = os.path.join(temp_path, str(uuid.uuid4()))
+        temp_resource_file = os.path.join(temp_resource_folder, os.path.basename(url))
+
+        os.makedirs(temp_resource_folder)
+
+        with open(temp_resource_file, "wb") as f:
+            response = requests.get(url, stream=True)
+            if response.status_code != 200:
+                raise AtomsUnreachableRemote(url)
+
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+                    f.flush()
+
+        return temp_resource_file
+    
+    def _extract_resource(self, resource_file: str, path: str):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        subprocess.run(["tar", "-xf", resource_file, "-C", path])

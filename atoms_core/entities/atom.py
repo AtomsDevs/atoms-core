@@ -225,7 +225,11 @@ class Atom:
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 0)
 
+        # run post unpack if any
+        distribution.post_unpack(chroot_path)
+
         # workaround for unsigned repo in ubuntu (need to investigate the cause)
+        # TODO: move to post_unpack
         if distribution.distribution_id == "ubuntu":
             with open(os.path.join(chroot_path, "etc/apt/sources.list"), "r") as f:
                 sources = f.read()

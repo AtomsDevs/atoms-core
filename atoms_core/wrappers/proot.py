@@ -50,8 +50,11 @@ class ProotWrapper:
             working_directory = "/"
 
         _command = [
-            ("env", "bin"),
-            "-i", "HOSTNAME=atom", "TERM=xterm", f"DISPLAY={os.environ['DISPLAY']}"
+            ("env", "bin"), "-i", 
+            "HOSTNAME=atom", 
+            "TERM=xterm", 
+            f"DISPLAY={os.environ['DISPLAY']}",
+            # "PROOT_NO_SECCOMP=1",
         ]
 
         # PATH is unset at this point, no binaries will be found, so we set it
