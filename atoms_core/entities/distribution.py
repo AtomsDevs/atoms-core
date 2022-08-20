@@ -20,7 +20,7 @@ import re
 import requests
 import shlex
 
-from atoms_core.exceptions.distribution import AtomsUnreachableRemote
+from atoms_core.exceptions.distribution import AtomsUnreachableRemote, AtomsMisconfiguredDistribution
 
 
 class AtomDistribution:
@@ -87,9 +87,13 @@ class AtomDistribution:
 
         content = response.text.split("\n")
         for line in content:
+            if len(line) == 0:
+                continue
             _hash, _file = re.split(r"\s+", line, maxsplit=1)
-            if self.get_remote_image_name(architecture, release) in _file:
+            if self.get_remote_image_name(architecture, release) in _file.strip():
                 return _hash.strip()
+            raise AtomsMisconfiguredDistribution(
+                "Hash mismatch or the sum file is not well formatted. Double check that the file name respect its remote.")
 
         raise ValueError(f"Unknown check_type method: {check_type}")
 

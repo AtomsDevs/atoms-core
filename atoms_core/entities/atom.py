@@ -181,6 +181,10 @@ class Atom:
                 instance.client_bridge.exec_on_main(
                     error_fn, "Unreachable remote, it might be a temporary problem.")
             return
+        except AtomsMisconfiguredDistribution as e:
+            if error_fn:
+                instance.client_bridge.exec_on_main(error_fn, str(e))
+            return
 
         # Create configuration
         if config_fn:

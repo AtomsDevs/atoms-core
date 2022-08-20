@@ -33,3 +33,12 @@ class AtomsUnreachableRemote(AtomsException):
 
     def __init__(self, remote: str):
         super().__init__("Unreachable remote: {}".format(remote))
+
+
+class AtomsMisconfiguredDistribution(AtomsException):
+    """
+    Exception raised when a distribution is misconfigured.
+    """
+
+    def __init__(self, message: str):
+        super().__init__("Misconfigured distribution: {}".format(message))
