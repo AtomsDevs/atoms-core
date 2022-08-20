@@ -1,3 +1,5 @@
+import os
+
 from atoms_core.entities.distribution import AtomDistribution
 
 
@@ -33,3 +35,19 @@ class Ubuntu(AtomDistribution):
             architecture,
             build_date
         )
+
+    def post_unpack(self, chroot):
+        # workaround Code:APT_UNTRUSTED_KEYS
+        with open(os.path.join(chroot, "etc/apt/sources.list"), "r") as f:
+            sources = f.read()
+            sources = sources.replace("deb ", "deb [trusted=yes] ")
+            sources = sources.replace("deb-src ", "deb-src [trusted=yes] ")
+            with open(os.path.join(chroot, "etc/apt/sources.list"), "w") as f:
+                f.write(sources)
+        
+        # workaround Code:NO_APT_CHWN_PERM
+        with open(os.path.join(chroot, "etc/passwd"), "r") as f:
+            passwd = f.read()
+            passwd = passwd.replace("_apt:x:", "#_apt:x:")
+            with open(os.path.join(chroot, "etc/passwd"), "w") as f:
+                f.write(passwd)
