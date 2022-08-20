@@ -205,9 +205,6 @@ class Atom:
         )
         os.makedirs(chroot_path)
 
-        # install servicectl to be able to manage services in the chroot
-        ServicectlWrapper().install_to_path(os.path.join(atom.fs_path, "usr/local/bin"))
-
         if config_fn:
             instance.client_bridge.exec_on_main(config_fn, 1)
 
@@ -222,6 +219,9 @@ class Atom:
             instance.client_bridge.exec_on_main(unpack_fn, 1)
 
         # Finalize and distro specific workarounds
+        # install servicectl to be able to manage services in the chroot
+        ServicectlWrapper().install_to_path(os.path.join(atom.fs_path, "usr/local/bin"))
+
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 0)
 
