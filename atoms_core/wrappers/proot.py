@@ -52,7 +52,9 @@ class ProotWrapper:
         _command = [
             ("env", "bin"), "-i", 
             "HOSTNAME=atom", 
-            "TERM=xterm", 
+            f"TERM=xterm-256color", 
+            "HOME=/root",
+            "TMPDIR=/tmp",
             f"DISPLAY={os.environ['DISPLAY']}",
             # "PROOT_NO_SECCOMP=1",
         ]
@@ -71,6 +73,7 @@ class ProotWrapper:
             # "-i", f"{os.getuid()}:{os.getgid()}",
 
             "-0",
+            "--kill-on-exit",
             "-r", chroot_path,
             "-b", "/etc/host.conf:/etc/host.conf",
             "-b", "/etc/hosts:/etc/hosts",
@@ -79,8 +82,9 @@ class ProotWrapper:
             "-b", "/etc/timezone:/etc/timezone",
             "-b", "/etc/localtime:/etc/localtime",
             "-b", "/dev:/dev",
-            "-b", "/sys:/sys",
+            "-b", "/dev/urandom:/dev/urandom",
             "-b", "/proc:/proc",
+            "-b", "/sys:/sys",
             "-b", "/tmp:/tmp",
             "-b", f"{Path.home()}:{Path.home()}",
             "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
