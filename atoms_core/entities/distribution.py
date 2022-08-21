@@ -20,10 +20,9 @@ import re
 import uuid
 import requests
 import tempfile
-import subprocess
-import shlex
 
 from atoms_core.exceptions.distribution import AtomsUnreachableRemote, AtomsMisconfiguredDistribution
+from atoms_core.utils.command import CommandUtils
 
 
 class AtomDistribution:
@@ -129,4 +128,9 @@ class AtomDistribution:
         if not os.path.exists(path):
             os.makedirs(path)
 
-        subprocess.run(["tar", "-xf", resource_file, "-C", path])
+        CommandUtils.run_command(
+            CommandUtils.get_valid_command([
+                ("tar", "bin"),
+                "-xf", resource_file, "-C", path
+            ])
+        )
