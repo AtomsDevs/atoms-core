@@ -56,3 +56,7 @@ Good luck!
         with open(os.path.join(chroot, "etc/apt/apt.conf.d/01atom"), "w") as f:
             f.write("APT::Sandbox \"0\";")
             f.write("APT::Sandbox::User \"root\";")
+        
+        # workaround Code:PATH_NOT_DEFINED
+        with open(os.path.join(chroot, "etc/profile.d/atom.sh"), "w") as f:
+            f.write("export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
