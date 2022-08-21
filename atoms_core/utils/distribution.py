@@ -70,7 +70,6 @@ class AtomsDistributionsUtils:
     def get_distributions() -> list:
         distributions = [
             AlpineLinux(),
-            Ubuntu(),
             Fedora(),
             AlmaLinux(),
             RockyLinux(),
@@ -79,6 +78,7 @@ class AtomsDistributionsUtils:
             Debian(),
             OpenSuse(),
             Gentoo(),
+            Ubuntu(),
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
