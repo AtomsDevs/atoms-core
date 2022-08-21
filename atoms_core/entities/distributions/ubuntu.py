@@ -30,3 +30,17 @@ class Ubuntu(AtomDistribution):
             
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
+
+    def post_unpack(self, chroot):
+        # workaround Code:APT_UNTRUSTED_KEYS
+        with open(os.path.join(chroot, "etc/apt/sources.list"), "r") as f:
+            sources = f.read()
+            sources = sources.replace("deb ", "deb [trusted=yes] ")
+            sources = sources.replace("deb-src ", "deb-src [trusted=yes] ")
+            with open(os.path.join(chroot, "etc/apt/sources.list"), "w") as f:
+                f.write(sources)
+
+        # workaround Code:NO_APT_CHWN_PERM
+        with open(os.path.join(chroot, "etc/apt/apt.conf.d/01atom"), "w") as f:
+            f.write("APT::Sandbox \"0\";")
+            f.write("APT::Sandbox::User \"root\";")
