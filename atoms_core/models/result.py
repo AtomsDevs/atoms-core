@@ -1,4 +1,4 @@
-# instance.py
+# result.py
 #
 # Copyright 2022 mirkobrombin
 #
@@ -14,9 +14,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+class ResultModel:
 
-from atoms_core.models.instance import AtomsInstanceModel
+    def __init__(self, status: bool = False, data: dict = None, message: str = None):
+        if data is None:
+            data = {}
 
+        if message is None:
+            message = ''
 
-class AtomsInstance(AtomsInstanceModel):
-    pass
+        self.__status = status
+        self.__data = data
+        self.__message = message
+
+    @property
+    def status(self) -> bool:
+        return self.__status
+
+    @property
+    def data(self) -> dict:
+        return self.__data
+
+    @property
+    def message(self) -> str:
+        return self.__message
+        

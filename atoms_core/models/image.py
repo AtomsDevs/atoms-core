@@ -1,4 +1,4 @@
-# result.py
+# image.py
 #
 # Copyright 2022 mirkobrombin
 #
@@ -14,20 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class Result:
-    status: bool
-    data: dict
-    message: str
+import os
+
+from atoms_core.utils.file import FileUtils
+
+
+class ImageModel:
 
     def __init__(
         self,
-        status: bool = False,
-        data: dict = None,
-        message: str = ""
+        name: str,
+        path: str,
+        root: str = None,
     ):
-        if data is None:
-            data = {}
+        self.name = name
+        self.path = path
+        self.root = root
 
-        self.status = status
-        self.data = data
-        self.message = message
+    @property
+    def size(self):
+        return os.path.getsize(self.path)
+
+    @property
+    def human_size(self):
+        return FileUtils.get_human_size(self.size)

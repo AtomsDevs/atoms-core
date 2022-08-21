@@ -15,8 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from atoms_core.models.instance import AtomsInstanceModel
+class AtomsInstanceModel:
 
+    def __init__(self, config: 'AtomsConfig', client_bridge: 'ClientBridge'):
+        self.__config = config
+        self.__client_bridge = client_bridge
 
-class AtomsInstance(AtomsInstanceModel):
-    pass
+    @property
+    def config(self) -> 'AtomsConfig':
+        return self.__config
+
+    @property
+    def client_bridge(self) -> 'ClientBridge':
+        return self.__client_bridge

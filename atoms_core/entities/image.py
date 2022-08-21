@@ -18,25 +18,14 @@ import os
 import shutil
 import tarfile
 
-from atoms_core.utils.file import FileUtils
 from atoms_core.exceptions.image import AtomsImageMissingRoot
+from atoms_core.models.image import ImageModel
 
 
-class AtomImage:
-    name: str
-    path: str
-    root: str
-    size: int
+class AtomImage(ImageModel):
 
-    def __init__(
-        self,
-        name: str,
-        path: str,
-        root: str = None,
-    ):
-        self.name = name
-        self.path = path
-        self.root = root
+    def __init__(self, name: str, path: str, root: str = None):
+        super().__init__(name, path, root)
 
     def unpack(self, destination: str):
         if self.root is None:
@@ -61,11 +50,3 @@ class AtomImage:
 
     def destroy(self):
         os.remove(self.path)
-
-    @property
-    def size(self):
-        return os.path.getsize(self.path)
-
-    @property
-    def human_size(self):
-        return FileUtils.get_human_size(self.size)
