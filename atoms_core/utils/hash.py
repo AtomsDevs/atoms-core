@@ -43,3 +43,22 @@ class HashUtils:
                     break
                 hash_temp.update(buffer)
         return hash_temp.hexdigest()
+    
+    @staticmethod
+    def get_string_hash(string: str, hash_type: str) -> str:
+        """
+        Get the hash of a string.
+        """
+        if hash_type == "md5":
+            hash_temp = hashlib.md5()
+        elif hash_type == "sha256":
+            hash_temp = hashlib.sha256()
+        elif hash_type == "sha512":
+            hash_temp = hashlib.sha512()
+        elif hash_type == "sha1":
+            hash_temp = hashlib.sha1()
+        else:
+            raise ValueError("Invalid hash type")
+
+        hash_temp.update(string.encode("utf-8"))
+        return hash_temp.hexdigest()
