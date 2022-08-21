@@ -67,18 +67,18 @@ class Atom:
             update_date = creation_date
 
         self._instance = instance
-        self.name = name.strip()
-        self.distribution_id = distribution_id
-        self.relative_path = relative_path
-        self.creation_date = creation_date
-        self.update_date = update_date
-        self.container_id = container_id
-        self.container_image = container_image
+        self.__name = name.strip()
+        self.__distribution_id = distribution_id
+        self.__relative_path = relative_path
+        self.__creation_date = creation_date
+        self.__update_date = update_date
+        self.__container_id = container_id
+        self.__container_image = container_image
         self.__system_shell = system_shell
-        self.bind_themes = bind_themes
-        self.bind_icons = bind_icons
-        self.bind_fonts = bind_fonts
-        self.bind_extra_mounts = bind_extra_mounts or []
+        self.__bind_themes = bind_themes
+        self.__bind_icons = bind_icons
+        self.__bind_fonts = bind_fonts
+        self.__bind_extra_mounts = bind_extra_mounts or []
         self.__proot_wrapper = ProotWrapper()
 
         if container_id:
@@ -282,15 +282,15 @@ class Atom:
 
     def to_dict(self) -> dict:
         return {
-            "name": self.name,
-            "distributionId": self.distribution_id,
-            "relativePath": self.relative_path,
-            "creationDate": self.creation_date,
-            "updateDate": self.update_date,
-            "bindThemes": self.bind_themes,
-            "bindIcons": self.bind_icons,
-            "bindFonts": self.bind_fonts,
-            "bindExtraMounts": self.bind_extra_mounts
+            "name": self.__name,
+            "distributionId": self.__distribution_id,
+            "relativePath": self.__relative_path,
+            "creationDate": self.__creation_date,
+            "updateDate": self.__update_date,
+            "bindThemes": self.__bind_themes,
+            "bindIcons": self.__bind_icons,
+            "bindFonts": self.__bind_fonts,
+            "bindExtraMounts": self.__bind_extra_mounts
         }
 
     def save(self):
@@ -331,7 +331,7 @@ class Atom:
             environment = []
 
         _command = self.__distrobox_wrapper.get_distrobox_command_for_container(
-            self.container_id, command)
+            self.__container_id, command)
         return _command, environment, self.root_path
     
     def __generate_system_shell_command(self) -> tuple:
@@ -352,7 +352,7 @@ done
 
     def destroy(self):
         if self.is_distrobox_container or self.__system_shell:
-            self.__distrobox_wrapper.destroy_container(self.container_id, self.name)
+            self.__distrobox_wrapper.destroy_container(self.__container_id, self.__name)
             return
 
         # NOTE: might not be the best way to do this but shutil raises an
@@ -366,39 +366,59 @@ done
 
     def kill(self):
         if self.is_distrobox_container or self.__system_shell:
-            self.__distrobox_wrapper.stop_container(self.container_id)
+            self.__distrobox_wrapper.stop_container(self.__container_id)
             return
 
-        pids = ProcUtils.find_proc_by_cmdline(self.relative_path)
+        pids = ProcUtils.find_proc_by_cmdline(self.__relative_path)
         for pid in pids:
             pid.kill()
 
     def rename(self, new_name: str):
         if self.is_distrobox_container or self.__system_shell:
             raise AtomsCannotRenamePodmanContainers()
-        self.name = new_name
+        self.__name = new_name
         self.save()
 
     def stop_distrobox_container(self):
-        self.__distrobox_wrapper.stop_container(self.container_id)
+        self.__distrobox_wrapper.stop_container(self.__container_id)
     
     def set_bind_themes(self, status: bool):
-        self.bind_themes = status
+        self.__bind_themes = status
         self.save()
 
     def set_bind_icons(self, status: bool):
-        self.bind_icons = status
+        self.__bind_icons = status
         self.save()
 
     def set_bind_fonts(self, status: bool):
-        self.bind_fonts = status
+        self.__bind_fonts = status
         self.save()
+
+    @property
+    def name(self) -> str:
+        return self.__name
+    
+    @property
+    def relative_path(self) -> str:
+        return self.__relative_path
+    
+    @property
+    def creation_date(self) -> str:
+        return self.__creation_date
+
+    @property
+    def update_date(self) -> str:
+        return self.__update_date
+    
+    @property
+    def distribution_id(self) -> str:
+        return self.__distribution_id
 
     @property
     def path(self) -> str:
         if self.is_distrobox_container or self.__system_shell:
             return ""
-        return AtomsPathsUtils.get_atom_path(self._instance.config, self.relative_path)
+        return AtomsPathsUtils.get_atom_path(self._instance.config, self.__relative_path)
 
     @property
     def fs_path(self) -> str:
@@ -406,7 +426,7 @@ done
             return ""
         return os.path.join(
             AtomsPathsUtils.get_atom_path(
-                self._instance.config, self.relative_path),
+                self._instance.config, self.__relative_path),
             "chroot"
         )
 
@@ -419,10 +439,10 @@ done
     @property
     def distribution(self) -> 'AtomDistribution':
         if self.is_distrobox_container:
-            return AtomsDistributionsUtils.get_distribution_by_container_image(self.container_image)
+            return AtomsDistributionsUtils.get_distribution_by_container_image(self.__container_image)
         if self.__system_shell:
             return Host()
-        return AtomsDistributionsUtils.get_distribution(self.distribution_id)
+        return AtomsDistributionsUtils.get_distribution(self.__distribution_id)
 
     @property
     def enter_command(self) -> list:
@@ -435,12 +455,12 @@ done
     @property
     def formatted_update_date(self) -> str:
         return datetime.datetime.strptime(
-            self.update_date, "%Y-%m-%dT%H:%M:%S.%f"
+            self.__update_date, "%Y-%m-%dT%H:%M:%S.%f"
         ).strftime("%d %B, %Y %H:%M:%S")
 
     @property
     def is_distrobox_container(self) -> bool:
-        return self.container_id is not None
+        return self.__container_id is not None
 
     @property
     def is_system_shell(self) -> bool:
@@ -449,25 +469,49 @@ done
     @property
     def aid(self) -> str:
         if self.is_distrobox_container or self.__system_shell:
-            return self.container_id
-        return self.relative_path
+            return self.__container_id
+        return self.__relative_path
+    
+    @property
+    def container_id(self) -> str:
+        return self.__container_id
+
+    @property
+    def container_image(self) -> str:
+        return self.__container_image
+
+    @property
+    def bind_themes(self) -> bool:
+        return self.__bind_themes
+
+    @property
+    def bind_icons(self) -> bool:
+        return self.__bind_icons
+
+    @property
+    def bind_fonts(self) -> bool:
+        return self.__bind_fonts
+    
+    @property
+    def bind_extra_mounts(self) -> list:
+        return self.__bind_extra_mounts
 
     @property
     def bind_mounts(self) -> list:
         mounts = []
-        if self.bind_themes:
+        if self.__bind_themes:
             mounts.append(("/usr/share/themes", "/usr/share/themes"))
-        if self.bind_icons:
+        if self.__bind_icons:
             mounts.append(("/usr/share/icons", "/usr/share/icons"))
-        if self.bind_fonts:
+        if self.__bind_fonts:
             mounts.append(("/usr/share/fonts", "/usr/share/fonts"))
-        if self.bind_extra_mounts:
-            mounts += self.bind_extra_mounts
+        if self.__bind_extra_mounts:
+            mounts += self.__bind_extra_mounts
         return mounts
 
     def __str__(self):
         if self.is_distrobox_container:
-            return f"Atom {self.name} (distrobox)"
+            return f"Atom {self.__name} (distrobox)"
         elif self.is_system_shell:
-            return f"Atom {self.name} (system shell)"
-        return f"Atom: {self.name}"
+            return f"Atom {self.__name} (system shell)"
+        return f"Atom: {self.__name}"
