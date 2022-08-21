@@ -23,6 +23,7 @@ import tempfile
 
 from atoms_core.exceptions.distribution import AtomsUnreachableRemote, AtomsMisconfiguredDistribution
 from atoms_core.utils.command import CommandUtils
+from atoms_core.utils.hash import HashUtils
 
 
 class AtomDistribution:
@@ -70,7 +71,8 @@ class AtomDistribution:
         return self.remote_hash_structure.format(release, architecture)
 
     def get_image_name(self, architecture: str, release: str) -> str:
-        _repr = f"{self.distribution_id}-{release}-{architecture}"
+        remote = HashUtils.get_string_hash(self.get_remote(architecture, release), "sha1")
+        _repr = f"{self.distribution_id}-{release}-{architecture}-{remote}"
         return _repr.replace(".", "-").replace("_", "-").replace(" ", "-").lower()
 
     def get_remote_image_name(self, architecture: str, release: str) -> str:
