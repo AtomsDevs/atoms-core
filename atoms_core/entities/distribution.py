@@ -91,7 +91,13 @@ class AtomDistribution:
         for line in content:
             if len(line) == 0:
                 continue
-            _hash, _file = re.split(r"\s+", line, maxsplit=1)
+
+            items = re.split(r"\s+", line, maxsplit=1)
+            if len(items) == 1:
+                return items[0]
+
+            _hash, _file = items
+
             if self.get_remote_image_name(architecture, release) in _file.strip():
                 return _hash.strip()
             raise AtomsMisconfiguredDistribution(
