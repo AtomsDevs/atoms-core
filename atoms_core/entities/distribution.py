@@ -46,6 +46,7 @@ class AtomDistribution:
         architectures: dict,
         root: str,
         container_image_name: str,
+        motd: str = None
     ):
         self.distribution_id = distribution_id
         self.name = name
@@ -57,6 +58,7 @@ class AtomDistribution:
         self.architectures = architectures
         self.root = root
         self.container_image_name = container_image_name
+        self.motd = motd
 
     def __str__(self):
         return f"Distribution {self.name}"
@@ -113,6 +115,13 @@ class AtomDistribution:
     def post_unpack(self, chroot: str):
         pass
     
+    def set_motd(self, chroot: str):
+        if self.motd:
+            with open(os.path.join(chroot, "etc/profile"), "a") as f:
+                f.write("cat /etc/motd\n")
+            with open(os.path.join(chroot, "etc/motd"), "w") as f:
+                f.write(self.motd)
+
     def _download_resource(self, url: str):
         temp_path = tempfile.gettempdir()
         temp_resource_folder = os.path.join(temp_path, str(uuid.uuid4()))

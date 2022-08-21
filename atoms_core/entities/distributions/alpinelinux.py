@@ -13,8 +13,18 @@ class AlpineLinux(AtomDistribution):
             remote_hash_type="sha256",
             architectures={"x86_64": "x86_64"},
             root="",
-            container_image_name="alpine"
-        )
+            container_image_name="alpine",
+            motd="""
+============================================================
+Welcome to the Alpine Linux Atom Chroot!
+============================================================
+Some notes from the image maintainer(s):
+GUI apps are not supported due to musl not loading the required
+librares. We are looking into a solution.
+
+Report bugs in the Atoms repository.
+Good luck!
+""")
 
     def get_remote(self, architecture: str, release: str) -> str:
         return self.remote_structure.format(

@@ -15,8 +15,20 @@ class Ubuntu(AtomDistribution):
             remote_hash_type="sha256",
             architectures={"x86_64": "amd64"},
             root="",
-            container_image_name="ubuntu"
-        )
+            container_image_name="ubuntu",
+            motd="""
+============================================================
+Welcome to the Ubuntu Atom Chroot!
+============================================================
+Some notes from the image maintainer(s):
+We are aware of some problems with APT, and we are working on
+a solution. The APT::Sandbox is currently disabled to bypass
+some of those problems. This doesn't affect your security, just
+change the internal behaviour of APT.
+
+Report bugs in the Atoms repository.
+Good luck!
+""")
 
     def __get_base_path(self, architecture: str, release: str) -> str:
         base_url = "https://uk.lxd.images.canonical.com/images/ubuntu/{release}/{architecture}/default".format(
@@ -31,7 +43,7 @@ class Ubuntu(AtomDistribution):
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
 
-    def post_unpack(self, chroot):
+    def post_unpack(self, chroot: str):
         # workaround Code:APT_UNTRUSTED_KEYS
         with open(os.path.join(chroot, "etc/apt/sources.list"), "r") as f:
             sources = f.read()

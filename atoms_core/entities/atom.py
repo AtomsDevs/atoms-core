@@ -220,6 +220,11 @@ class Atom(AtomModel):
 
         # run post unpack if any
         distribution.post_unpack(chroot_path)
+
+        # set custom motd if any
+        distribution.set_motd(chroot_path)
+
+        # save atom configuration
         atom.save()
         
         if finalizing_fn:

@@ -13,5 +13,15 @@ class ArchLinux(AtomDistribution):
             remote_hash_type="sha256",
             architectures={"x86_64": "x86_64"},
             root="root.x86_64",
-            container_image_name="archlinux"
-        )
+            container_image_name="archlinux",
+            motd="""
+============================================================
+Welcome to the Arch Linux Atom Chroot!
+============================================================
+Some notes from the image maintainer(s):
+Pacman is currently broken due to a bug in glibc. We are 
+looking into a solution.
+
+Report bugs in the Atoms repository.
+Good luck!
+""")
