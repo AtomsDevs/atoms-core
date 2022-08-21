@@ -91,6 +91,7 @@ class ProotWrapper:
             "-b", f"{Path.home()}:{Path.home()}",
             "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
             "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib/xorg/modules/dri",
+            "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib64/dri",
 
             # the following are handled by the Atom instance
             #"-b", "/usr/share/themes:/usr/share/themes",
