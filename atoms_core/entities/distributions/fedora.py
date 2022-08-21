@@ -11,7 +11,7 @@ class Fedora(AtomDistribution):
             remote_structure=None,
             remote_hash_structure=None,
             remote_hash_type="sha1",
-            architectures={"x86_64": "x86_64"},
+            architectures={"x86_64": "amd64"},
             root="",
             container_image_name="fedora"
         )
