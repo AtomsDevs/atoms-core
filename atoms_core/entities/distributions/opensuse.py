@@ -7,29 +7,30 @@ class OpenSuse(AtomDistribution):
             distribution_id="opensuse",
             name="OpenSUSE",
             logo="opensuse-symbolic",
-            releases=["tumbleweed-20220818_04:20", "15.4-20220818_04:22"],
-            remote_structure="https://uk.lxd.images.canonical.com/images/opensuse/{0}/{1}/default/{2}/rootfs.tar.xz",
-            remote_hash_structure="https://uk.lxd.images.canonical.com/images/opensuse/{0}/{1}/default/{2}/SHA256SUMS",
+            releases=["Leap_15.1"],
+            remote_structure="https://download.opensuse.org/repositories/Cloud:/Images:/{0}/images/openSUSE-{2}-OpenStack-rootfs.{1}.tar.xz",
+            remote_hash_structure="https://download.opensuse.org/repositories/Cloud:/Images:/{0}/images/openSUSE-{2}-OpenStack-rootfs.{1}.tar.xz.sha256",
             remote_hash_type="sha256",
-            architectures={"x86_64": "amd64"},
+            architectures={"x86_64": "x86_64"},
             root="",
             container_image_name="opensuse",
         )
 
     def get_remote(self, architecture: str, release: str) -> str:
-        # split release into version and build date
-        release, build_date = release.split('-')
         return self.remote_structure.format(
             release,
             architecture,
-            build_date
+            release.replace("_", "-")
         )
 
     def get_remote_hash(self, architecture: str, release: str) -> str:
-        # split release into version and build date
-        release, build_date = release.split('-')
+        print(self.remote_hash_structure.format(
+            release,
+            architecture,
+            release.replace("_", "-")
+        ))
         return self.remote_hash_structure.format(
             release,
             architecture,
-            build_date
+            release.replace("_", "-")
         )
