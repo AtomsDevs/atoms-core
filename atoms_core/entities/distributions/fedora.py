@@ -4,32 +4,17 @@ from atoms_core.entities.distribution import AtomDistribution
 class Fedora(AtomDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="fedora",
+            distribution_id="fedora", 
             name="Fedora",
             logo="fedora-symbolic",
-            releases=["36-20220818_21:21", ],
-            remote_structure="https://uk.lxd.images.canonical.com/images/fedora/{0}/{1}/default/{2}/rootfs.tar.xz",
-            remote_hash_structure="https://uk.lxd.images.canonical.com/images/fedora/{0}/{1}/default/{2}/SHA256SUMS",
-            remote_hash_type="sha256",
-            architectures={"x86_64": "amd64"},
+            releases=["36"],
+            remote_structure="https://github.com/AtomsDevs/linux-rootfs-images/releases/download/fedora-{0}/Fedora-Container-Base-{0}.{1}.tar",
+            remote_hash_structure="https://github.com/AtomsDevs/linux-rootfs-images/releases/download/fedora-{0}/SHA1SUMS",
+            remote_hash_type="sha1",
+            architectures={"x86_64": "x86_64"},
             root="",
-            container_image_name="fedora",
+            container_image_name="fedora"
         )
-
-    def get_remote(self, architecture: str, release: str) -> str:
-        # split release into version and build date
-        release, build_date = release.split('-')
-        return self.remote_structure.format(
-            release,
-            architecture,
-            build_date
-        )
-
-    def get_remote_hash(self, architecture: str, release: str) -> str:
-        # split release into version and build date
-        release, build_date = release.split('-')
-        return self.remote_hash_structure.format(
-            release,
-            architecture,
-            build_date
-        )
+    
+    def get_remote_hash(self, _, release: str) -> str:
+        return self.remote_hash_structure.format(release)
