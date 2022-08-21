@@ -24,11 +24,6 @@ class OpenSuse(AtomDistribution):
         )
 
     def get_remote_hash(self, architecture: str, release: str) -> str:
-        print(self.remote_hash_structure.format(
-            release,
-            architecture,
-            release.replace("_", "-")
-        ))
         return self.remote_hash_structure.format(
             release,
             architecture,
