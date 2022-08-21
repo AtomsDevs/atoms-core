@@ -140,3 +140,23 @@ class AtomDistribution:
                 "-xf", resource_file, "-C", path
             ])
         )
+
+    def _get_remote_dirs(self, url: str) -> list:
+        response = requests.get(url)
+
+        if response.status_code != 200:
+            raise AtomsUnreachableRemote(url)
+
+        html = response.text
+        links = re.findall(r'<a href="(.*?)">(.*?)</a>', html)
+
+        if len(links) == 0:
+            raise AtomsMisconfiguredDistribution(f"No directories found in {url}")
+
+        links = [link[1].replace('/', '').strip() for link in links]
+        links = [link for link in links if link[:4].isdigit()]
+        links.sort(reverse=True)
+        return links
+
+    def _get_latest_remote_dir(self, url: str) -> str:
+        return self._get_remote_dirs(url)[0]

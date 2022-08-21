@@ -8,13 +8,23 @@ class Fedora(AtomDistribution):
             name="Fedora",
             logo="fedora-symbolic",
             releases=["36"],
-            remote_structure="https://github.com/AtomsDevs/linux-rootfs-images/releases/download/fedora-{0}/Fedora-Container-Base-{0}.{1}.tar",
-            remote_hash_structure="https://github.com/AtomsDevs/linux-rootfs-images/releases/download/fedora-{0}/SHA1SUMS",
+            remote_structure=None,
+            remote_hash_structure=None,
             remote_hash_type="sha1",
             architectures={"x86_64": "x86_64"},
             root="",
             container_image_name="fedora"
         )
-    
-    def get_remote_hash(self, _, release: str) -> str:
-        return self.remote_hash_structure.format(release)
+
+    def __get_base_path(self, architecture: str, release: str) -> str:
+        base_url = "https://uk.lxd.images.canonical.com/images/fedora/{release}/{architecture}/default".format(
+            release=release, architecture=architecture
+        )
+        build = self._get_latest_remote_dir(base_url)
+        return "{0}/{1}".format(base_url, build)
+        
+    def get_remote(self, architecture: str, release: str) -> str:
+        return "{0}/rootfs.tar.xz".format(self.__get_base_path(architecture, release))
+            
+    def get_remote_hash(self, architecture: str, release: str) -> str:
+        return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))

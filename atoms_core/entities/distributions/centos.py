@@ -7,29 +7,24 @@ class Centos(AtomDistribution):
             distribution_id="centos",
             name="Centos",
             logo="centos-symbolic",
-            releases=["9-20220818_07:09", ],
-            remote_structure="https://uk.lxd.images.canonical.com/images/centos/{0}-Stream/{1}/default/{2}/rootfs.tar.xz",
-            remote_hash_structure="https://uk.lxd.images.canonical.com/images/centos/{0}-Stream/{1}/default/{2}/SHA256SUMS",
+            releases=["9-Stream", ],
+            remote_structure=None,
+            remote_hash_structure=None,
             remote_hash_type="sha256",
             architectures={"x86_64": "amd64"},
             root="",
             container_image_name="centos",
         )
 
+    def __get_base_path(self, architecture: str, release: str) -> str:
+        base_url = "https://uk.lxd.images.canonical.com/images/centos/{release}/{architecture}/default".format(
+            release=release, architecture=architecture
+        )
+        build = self._get_latest_remote_dir(base_url)
+        return "{0}/{1}".format(base_url, build)
+        
     def get_remote(self, architecture: str, release: str) -> str:
-        # split release into version and build date
-        release, build_date = release.split('-')
-        return self.remote_structure.format(
-            release,
-            architecture,
-            build_date
-        )
-
+        return "{0}/rootfs.tar.xz".format(self.__get_base_path(architecture, release))
+            
     def get_remote_hash(self, architecture: str, release: str) -> str:
-        # split release into version and build date
-        release, build_date = release.split('-')
-        return self.remote_hash_structure.format(
-            release,
-            architecture,
-            build_date
-        )
+        return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
