@@ -4,14 +4,14 @@ from atoms_core.entities.distribution import AtomDistribution
 class ArchLinux(AtomDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="archlinux",
+            distribution_id="archlinux", 
             name="Arch Linux",
             logo="arch-linux-symbolic",
-            releases=["20220818_04:20", ],
-            remote_structure="https://uk.lxd.images.canonical.com/images/archlinux/current/{1}/default/{0}/rootfs.tar.xz",
-            remote_hash_structure="https://uk.lxd.images.canonical.com/images/archlinux/current/{1}/default/{0}/SHA256SUMS",
+            releases=["2022.08.05",],
+            remote_structure="https://archive.archlinux.org/iso/{0}/archlinux-bootstrap-{0}-{1}.tar.gz",
+            remote_hash_structure="https://archive.archlinux.org/iso/{0}/sha256sums.txt",
             remote_hash_type="sha256",
-            architectures={"x86_64": "amd64"},
-            root="",
-            container_image_name="archlinux",
+            architectures={"x86_64": "x86_64"},
+            root="root.x86_64",
+            container_image_name="archlinux"
         )
