@@ -187,7 +187,6 @@ class Atom(AtomModel):
         relative_path = str(uuid.uuid4()) + ".atom"
         atom_path = AtomsPathsUtils.get_atom_path(instance.config, relative_path)
         chroot_path = os.path.join(atom_path, "chroot")
-        root_path = os.path.join(chroot_path, "root")
         atom = cls(
             instance, name, distribution.distribution_id,
             relative_path, date,
@@ -198,6 +197,11 @@ class Atom(AtomModel):
         )
         os.makedirs(chroot_path)
 
+        # make some extra/common paths
+        os.makedirs(os.path.join(chroot_path, "root"), exist_ok=True)
+        os.makedirs(os.path.join(chroot_path, "usr/lib/xorg/modules/dri"), exist_ok=True)
+        os.makedirs(os.path.join(chroot_path, "usr/lib64/dri"), exist_ok=True)
+
         if config_fn:
             instance.client_bridge.exec_on_main(config_fn, 1)
 
@@ -206,7 +210,6 @@ class Atom(AtomModel):
             instance.client_bridge.exec_on_main(unpack_fn, 0)
 
         image.unpack(chroot_path)
-        os.makedirs(root_path, exist_ok=True)
 
         if unpack_fn:
             instance.client_bridge.exec_on_main(unpack_fn, 1)
