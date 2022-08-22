@@ -26,7 +26,7 @@ which broke Pacman.
 
 Report bugs in the Atoms repository.
 Good luck!
-""")
+""" if "FLATPAK_ID" in os.environ else None)
 
     def __get_base_path(self, architecture: str, release: str) -> str:
         base_url = "https://uk.lxd.images.canonical.com/images/archlinux/{release}/{architecture}/default".format(
@@ -43,13 +43,14 @@ Good luck!
 
     def post_unpack(self, chroot: str):
         # workaround Code:FAIL_INIT_ALPM
-        glibc = self._download_resource("https://repo.archlinuxcn.org/x86_64/glibc-linux4-2.35-2-x86_64.pkg.tar.zst")
-        self._extract_resource(glibc, chroot)
-        with open(os.path.join(chroot, "etc/pacman.conf"), "r") as f:
-            lines = f.readlines()
-        with open(os.path.join(chroot, "etc/pacman.conf"), "w") as f:
-            for line in lines:
-                if "#IgnorePkg" in line:
-                    f.write("IgnorePkg = glibc\n")
-                    continue
-                f.write(line)
+        if "FLATPAK_ID" in os.environ:
+            glibc = self._download_resource("https://repo.archlinuxcn.org/x86_64/glibc-linux4-2.35-2-x86_64.pkg.tar.zst")
+            self._extract_resource(glibc, chroot)
+            with open(os.path.join(chroot, "etc/pacman.conf"), "r") as f:
+                lines = f.readlines()
+            with open(os.path.join(chroot, "etc/pacman.conf"), "w") as f:
+                for line in lines:
+                    if "#IgnorePkg" in line:
+                        f.write("IgnorePkg = glibc\n")
+                        continue
+                    f.write(line)
