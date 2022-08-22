@@ -22,7 +22,7 @@ Welcome to the Arch Linux Atom Chroot!
 ============================================================
 Some notes from the image maintainer(s):
 glibc was downgraded to 2.35-2 to fix a compatibility issue
-which broke Pacman.
+which broke Pacman. As a result GUI apps will not work.
 
 Report bugs in the Atoms repository.
 Good luck!
