@@ -1,7 +1,8 @@
 from atoms_core.entities.distribution import AtomDistribution
+from atoms_core.entities.distributions.helpers.rpm import RpmDistribution
 
 
-class OpenSuse(AtomDistribution):
+class OpenSuse(AtomDistribution, RpmDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="opensuse",
@@ -14,6 +15,7 @@ class OpenSuse(AtomDistribution):
             architectures={"x86_64": "x86_64"},
             root="",
             container_image_name="opensuse",
+            motd=self._rpm_motd("OpenSUSE")
         )
 
     def get_remote(self, architecture: str, release: str) -> str:
