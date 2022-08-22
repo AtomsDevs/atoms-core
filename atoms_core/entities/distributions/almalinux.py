@@ -1,7 +1,8 @@
 from atoms_core.entities.distribution import AtomDistribution
+from atoms_core.entities.distributions.helpers.rpm import RpmDistribution
 
 
-class AlmaLinux(AtomDistribution):
+class AlmaLinux(AtomDistribution, RpmDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="almalinux",
@@ -14,6 +15,7 @@ class AlmaLinux(AtomDistribution):
             architectures={"x86_64": "amd64"},
             root="",
             container_image_name="almalinux",
+            motd=self._rpm_motd("AlmaLinux")
         )
 
     def __get_base_path(self, architecture: str, release: str) -> str:

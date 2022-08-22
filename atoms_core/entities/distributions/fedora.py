@@ -1,7 +1,8 @@
 from atoms_core.entities.distribution import AtomDistribution
+from atoms_core.entities.distributions.helpers.rpm import RpmDistribution
 
 
-class Fedora(AtomDistribution):
+class Fedora(AtomDistribution, RpmDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="fedora", 
@@ -10,10 +11,11 @@ class Fedora(AtomDistribution):
             releases=["36"],
             remote_structure=None,
             remote_hash_structure=None,
-            remote_hash_type="sha1",
+            remote_hash_type="sha256",
             architectures={"x86_64": "amd64"},
             root="",
-            container_image_name="fedora"
+            container_image_name="fedora",
+            motd=self._rpm_motd("Fedora")
         )
 
     def __get_base_path(self, architecture: str, release: str) -> str:
