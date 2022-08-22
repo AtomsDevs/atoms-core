@@ -69,17 +69,18 @@ class AtomsDistributionsUtils:
     @staticmethod
     def get_distributions() -> list:
         distributions = [
+            Ubuntu(),
+            
             AlpineLinux(),
             Fedora(),
             AlmaLinux(),
             RockyLinux(),
             Centos(),
-            VoidLinux(),
             Debian(),
             OpenSuse(),
             Gentoo(),
-            Ubuntu(),
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
+            distributions.append(VoidLinux()) # libc.so.6 not found
         return distributions
