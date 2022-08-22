@@ -84,7 +84,6 @@ class ProotWrapper:
             "-b", "/etc/timezone:/etc/timezone",
             "-b", "/etc/localtime:/etc/localtime",
             "-b", "/dev:/dev",
-            "-b", "/dev/urandom:/dev/urandom",
             "-b", "/proc:/proc",
             "-b", "/sys:/sys",
             "-b", "/tmp:/tmp",
