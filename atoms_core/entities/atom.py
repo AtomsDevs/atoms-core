@@ -34,7 +34,6 @@ from atoms_core.utils.file import FileUtils
 from atoms_core.wrappers.proot import ProotWrapper
 from atoms_core.wrappers.servicectl import ServicectlWrapper
 from atoms_core.wrappers.distrobox import DistroboxWrapper
-from atoms_core.entities.distributions.host import Host
 from atoms_core.models.atom import AtomModel
 
 

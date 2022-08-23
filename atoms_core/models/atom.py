@@ -19,6 +19,7 @@ import datetime
 
 from atoms_core.utils.paths import AtomsPathsUtils
 from atoms_core.utils.distribution import AtomsDistributionsUtils
+from atoms_core.entities.distributions.host import Host
 
 
 class AtomModel:

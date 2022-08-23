@@ -40,7 +40,7 @@ class AtomDistribution:
         architectures: dict,
         root: str,
         container_image_name: str,
-        default_cmd: list,
+        default_cmd: list = None,
         motd: str = None,
     ):
         if not default_cmd:
