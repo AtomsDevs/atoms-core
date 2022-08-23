@@ -15,6 +15,7 @@ class Fedora(AtomDistribution, RpmDistribution):
             architectures={"x86_64": "amd64"},
             root="",
             container_image_name="fedora",
+            default_cmd=["bash", "--login"],
             motd=self._rpm_motd("Fedora")
         )
 

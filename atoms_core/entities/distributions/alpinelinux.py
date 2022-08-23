@@ -14,6 +14,7 @@ class AlpineLinux(AtomDistribution):
             architectures={"x86_64": "x86_64"},
             root="",
             container_image_name="alpine",
+            default_cmd=["ash", "--login"],
             motd="""
 ============================================================
 Welcome to the Alpine Linux Atom Chroot!

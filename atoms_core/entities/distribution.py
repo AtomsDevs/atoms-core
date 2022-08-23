@@ -27,12 +27,6 @@ from atoms_core.utils.hash import HashUtils
 
 
 class AtomDistribution:
-    distribution_id: str
-    name: str
-    logo: str
-    remote_structure: str
-    remote_hash_structure: str
-    architectures: dict
 
     def __init__(
         self,
@@ -46,6 +40,7 @@ class AtomDistribution:
         architectures: dict,
         root: str,
         container_image_name: str,
+        default_cmd: list,
         motd: str = None
     ):
         self.distribution_id = distribution_id
@@ -58,6 +53,7 @@ class AtomDistribution:
         self.architectures = architectures
         self.root = root
         self.container_image_name = container_image_name
+        self.default_cmd = default_cmd
         self.motd = motd
 
     def __str__(self):

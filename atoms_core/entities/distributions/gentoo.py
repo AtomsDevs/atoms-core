@@ -14,6 +14,7 @@ class Gentoo(AtomDistribution):
             architectures={"x86_64": "amd64"},
             root="",
             container_image_name="gentoo",
+            default_cmd=["bash", "--login"],
         )
 
     def __get_base_path(self, architecture: str, release: str) -> str:

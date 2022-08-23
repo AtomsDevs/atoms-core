@@ -15,5 +15,6 @@ class RockyLinux(AtomDistribution, RpmDistribution):
             architectures={"x86_64": "x86_64"},
             root="",
             container_image_name="rockylinux",
+            default_cmd=["bash", "--login"],
             motd=self._rpm_motd("Rocky Linux")
         )

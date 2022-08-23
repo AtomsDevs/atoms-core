@@ -15,6 +15,7 @@ class AlmaLinux(AtomDistribution, RpmDistribution):
             architectures={"x86_64": "amd64"},
             root="",
             container_image_name="almalinux",
+            default_cmd=["bash", "--login"],
             motd=self._rpm_motd("AlmaLinux")
         )
 

@@ -310,6 +310,8 @@ class Atom(AtomModel):
         elif self._system_shell:
             command, environment, working_directory = self.__generate_system_shell_command()
         else:
+            if not command:
+                command = self.distribution.default_cmd
             command, environment, working_directory = self.__generate_proot_command(
                 command, environment)
 

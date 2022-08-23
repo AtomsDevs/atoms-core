@@ -16,6 +16,7 @@ class Ubuntu(AtomDistribution):
             architectures={"x86_64": "amd64"},
             root="",
             container_image_name="ubuntu",
+            default_cmd=["bash", "--login"],
             motd="""
 ============================================================
 Welcome to the Ubuntu Atom Chroot!
