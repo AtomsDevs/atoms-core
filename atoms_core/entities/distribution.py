@@ -42,11 +42,10 @@ class AtomDistribution:
         container_image_name: str,
         default_cmd: list,
         motd: str = None,
-        ps1: str = None
     ):
         if not default_cmd:
             default_cmd = ["sh", "--login"]
-            
+
         self.distribution_id = distribution_id
         self.name = name
         self.logo = logo
