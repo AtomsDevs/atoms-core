@@ -86,9 +86,11 @@ class ProotWrapper:
             "-b", "/dev:/dev",
             "-b", "/proc:/proc",
             "-b", "/sys:/sys",
+            "-b", "/:/run/host",
+            "-b", "/run/systemd:/run/systemd",
             "-b", "/tmp:/tmp",
             "-b", f"{Path.home()}:{Path.home()}",
-            "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
+            # "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
             "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib/xorg/modules/dri",
             "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib64/dri",
 
