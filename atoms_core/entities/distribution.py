@@ -119,7 +119,7 @@ class AtomDistribution:
             with open(os.path.join(chroot, "etc/profile"), "a") as f:
                 f.write("cat /etc/motd\n")
             with open(os.path.join(chroot, "etc/motd"), "w") as f:
-                f.write(self.motd \
+                f.write(self.motd 
                     + "\n\nTo disable this message, remove 'cat /etc/motd' from /etc/profile.\n")
 
     def _download_resource(self, url: str):
