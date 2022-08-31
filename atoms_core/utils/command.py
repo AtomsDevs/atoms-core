@@ -65,7 +65,7 @@ class CommandUtils:
         except (FileNotFoundError, AtomsNoBinaryFound):
             return
         except subprocess.CalledProcessError:
-            logger.warning("Atoms has no access to org.freedesktop.Flatpak")
+            logger.debug("Atoms has no access to org.freedesktop.Flatpak")
             return
 
     @staticmethod
