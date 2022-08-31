@@ -22,6 +22,7 @@ Good luck!
 
     @staticmethod
     def set_macros(chroot: str):
+        macros_path = os.path.join(chroot, "usr/lib/rpm/macros.d")
         macros = [
             "/dev",
             "/media",
@@ -32,5 +33,9 @@ Good luck!
             "/var/lib",
             "/var/log",
         ]
-        with open(os.path.join(chroot, "usr/lib/rpm/macros.d/macros.atoms"), "w") as f:
+        
+        if not os.path.exists(macros_path):
+            os.makedirs(macros_path)
+
+        with open(os.path.join(macros_path, "macros.atoms"), "w") as f:
             f.write("%%_netsharedpath %s" % ":".join(macros))
