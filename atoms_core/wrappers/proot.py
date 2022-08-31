@@ -17,12 +17,16 @@
 import os
 import uuid
 import shutil
+import logging
 import tempfile
 import subprocess
 from pathlib import Path
 
 from atoms_core.utils.command import CommandUtils
 from atoms_core.exceptions.common import AtomsNoBinaryFound
+
+
+logger = logging.getLogger("atoms.wrappers.proot")
 
 
 class ProotWrapper:
@@ -40,6 +44,12 @@ class ProotWrapper:
         working_directory: str = None,
         bind_mounts: list = None,
     ) -> list:
+        def bind_if_exists(source: str, dest: str = None) -> list:
+            if os.path.exists(source):
+                return ["-b", f"{source}:{dest}"] if dest else ["-b", source]
+            logger.warning(f"{source} does not exist, skipping bind mount")
+            return []
+
         if "DEV_BASH" in os.environ:
             return CommandUtils.get_valid_command([("bash", "bin")])
 
@@ -69,42 +79,37 @@ class ProotWrapper:
         _command += [
             self.__binary_path,
             "-w", working_directory,
-
-            # the following pass the current user and group id to the chroot
-            # it's currently disabled as I'm trying to figure the user as root
-            # "-i", f"{os.getuid()}:{os.getgid()}",
-
             "-0",
             "--kill-on-exit",
             "-r", chroot_path,
-            "-b", "/etc/host.conf:/etc/host.conf",
-            "-b", "/etc/hosts:/etc/hosts",
-            "-b", "/etc/nsswitch.conf:/etc/nsswitch.conf",
-            "-b", "/etc/resolv.conf:/etc/resolv.conf",
-            "-b", "/etc/timezone:/etc/timezone",
-            "-b", "/etc/localtime:/etc/localtime",
-            "-b", "/dev:/dev",
-            "-b", "/proc:/proc",
-            "-b", "/sys:/sys",
-            "-b", "/:/run/host",
-            "-b", "/run/systemd:/run/systemd",
-            "-b", "/tmp:/tmp",
-            "-b", f"{Path.home()}:{Path.home()}",
-            # "-b", f"/run/user/{os.getuid()}:/run/user/{os.getuid()}",
-            "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib/xorg/modules/dri",
-            "-b", "/usr/lib/x86_64-linux-gnu/GL/lib/dri/:/usr/lib64/dri",
-
-            # the following are handled by the Atom instance
-            #"-b", "/usr/share/themes:/usr/share/themes",
-            #"-b", "/usr/share/fonts:/usr/share/fonts",
-            #"-b", "/usr/share/icons:/usr/share/icons",
         ]
+
+        _command += bind_if_exists("/etc/host.conf")
+        _command += bind_if_exists("/etc/hosts")
+        _command += bind_if_exists("/etc/nsswitch.conf")
+        _command += bind_if_exists("/etc/resolv.conf")
+        _command += bind_if_exists("/etc/timezone")
+        _command += bind_if_exists("/etc/localtime")
+        _command += bind_if_exists("/dev/")
+        _command += bind_if_exists("/proc/")
+        _command += bind_if_exists("/sys/")
+        _command += bind_if_exists("/", "/run/host")
+        _command += bind_if_exists("/run/systemd")
+        _command += bind_if_exists("/run/shm")
+        _command += bind_if_exists("/tmp/")
+        _command += bind_if_exists(f"{Path.home()}")
+        # _command += bind_if_exists(f"/run/user/{os.getuid()}:/run/user/{os.getuid()}")
+        _command += bind_if_exists("/usr/lib/x86_64-linux-gnu/GL/lib/dri/", "/usr/lib/xorg/modules/dri")
+        _command += bind_if_exists("/usr/lib/x86_64-linux-gnu/GL/lib/dri/", "/usr/lib64/dri")
+        # the following are handled by the Atom instance
+        #_command += bind_if_exists("/usr/share/themes:/usr/share/themes")
+        #_command += bind_if_exists("/usr/share/fonts:/usr/share/fonts")
+        #_command += bind_if_exists("/usr/share/icons:/usr/share/icons")
 
         if bind_mounts is not None:
             for bind_mount in bind_mounts:
                 host_mount, chroot_mount = bind_mount
-                _command.append("-b")
-                _command.append(f"{host_mount}:{chroot_mount}")
+                _command += bind_if_exists(host_mount, chroot_mount)
         
         # passwd and group cannot be binded, this will replace the existing
         # files, invalidating users/groups made by the user in the chroot
