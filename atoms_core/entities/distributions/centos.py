@@ -31,3 +31,7 @@ class Centos(AtomDistribution, RpmDistribution):
             
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
+
+    def post_unpack(self, chroot: str):
+        # workaround Code:RPM_UNPK_NO_PERM
+        self.set_macros(chroot)

@@ -32,3 +32,7 @@ class OpenSuse(AtomDistribution, RpmDistribution):
             architecture,
             release.replace("_", "-")
         )
+
+    def post_unpack(self, chroot: str):
+        # workaround Code:RPM_UNPK_NO_PERM
+        self.set_macros(chroot)

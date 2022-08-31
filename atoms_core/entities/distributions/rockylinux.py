@@ -18,3 +18,7 @@ class RockyLinux(AtomDistribution, RpmDistribution):
             default_cmd=["bash", "--login"],
             motd=self._rpm_motd("Rocky Linux")
         )
+
+    def post_unpack(self, chroot: str):
+        # workaround Code:RPM_UNPK_NO_PERM
+        self.set_macros(chroot)
