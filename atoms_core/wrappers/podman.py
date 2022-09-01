@@ -84,19 +84,19 @@ class PodmanWrapper:
     def destroy_container(self, container_id: str):
         command = [self.__binary_path, "rm", "-f", container_id]
         CommandUtils.run_command(command, allow_flatpak_host=True)
-    
+
     def new_container(self, name: str, image: str) -> str:
         # create new container for shell usage, entrypoint must be /bin/sh
         command = [
-            self.__binary_path, "create", 
+            self.__binary_path, "create",
             "-it",
             "--ipc", "host",
-            "--name", name, 
+            "--name", name,
             "--network", "host",
             "--privileged",
             "--user", "root:root",
             "--pid", "host",
-            "--env", "SHELL=/bin/sh", 
+            "--env", "SHELL=/bin/sh",
             "--env", f"HOME={os.environ['HOME']}",
             "--volume", f"{os.environ['HOME']}:{os.environ['HOME']}:rslave",
             "--volume", "/:/run/host:rslave",
@@ -109,11 +109,12 @@ class PodmanWrapper:
             "--volume", "/etc/hosts:/etc/hosts:ro",
             "--volume", "/etc/localtime:/etc/localtime:ro",
             "--volume", "/etc/resolv.conf:/etc/resolv.conf:ro",
-            "--entrypoint", "/bin/sh", 
+            "--entrypoint", "/bin/sh",
             image,
         ]
         try:
-            CommandUtils.run_command(command, output=True, wait=True, allow_flatpak_host=True)
+            CommandUtils.run_command(
+                command, output=True, wait=True, allow_flatpak_host=True)
         except Exception as e:
             # TODO: improve error message
             raise AtomsFailToCreateContainer(str(e))
@@ -124,9 +125,9 @@ class PodmanWrapper:
                 return _id
 
         raise AtomsFailToCreateContainer(
-            "A container with name '{}' was not found after creation. Somethings goes wrong.".format(name)
+            "A container with name '{}' was not found after creation. Somethings goes wrong.".format(
+                name)
         )
-
 
     @property
     def is_supported(self) -> bool:

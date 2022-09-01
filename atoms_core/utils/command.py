@@ -80,14 +80,14 @@ class CommandUtils:
         if allow_flatpak_host and CommandUtils.is_flatpak():
             return CommandUtils.flatpak_host_which(binary)
         return shutil.which(binary)
-    
+
     @staticmethod
     def remove_formatting(output: str) -> str:
         """
         Remove formatting from the output.
 
         :param output: The output to remove formatting from.
-        
+
         Credits: Martijn Pieters
                  <https://stackoverflow.com/a/14693789>
         """

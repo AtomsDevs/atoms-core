@@ -24,7 +24,8 @@ class CommonDistribution:
             os.symlink(homedir, chroot_homedir)
 
         with open(os.path.join(chroot, "etc/passwd"), "a") as f:
-            f.write(f"{os.getlogin()}:x:{os.getuid()}:{os.getgid()}::/home/{os.getlogin()}:\n")
+            f.write(
+                f"{os.getlogin()}:x:{os.getuid()}:{os.getgid()}::/home/{os.getlogin()}:\n")
 
         with open(os.path.join(chroot, "etc/group"), "a") as f:
             f.write(f"{os.getlogin()}:x:{os.getgid()}:{os.getlogin()}\n")

@@ -29,7 +29,7 @@ class ServicectlWrapper:
 
     def __find_binary_path(self, binary: str) -> str:
         return CommandUtils.which(binary)
-    
+
     def install_to_path(self, path: str):
         if not self.is_supported:
             return

@@ -70,12 +70,12 @@ class Atom(AtomModel):
             bind_fonts,
             bind_extra_mounts,
         )
-            
+
         if container_id:
             self.__distrobox_wrapper = DistroboxWrapper()
         else:
             self.__proot_wrapper = ProotWrapper()
-        
+
     @staticmethod
     def get_extra_default_options():
         return {
@@ -161,7 +161,8 @@ class Atom(AtomModel):
                 instance, distribution, architecture, release, download_fn)
         except AtomsHashMissmatchError:
             if error_fn:
-                instance.client_bridge.exec_on_main(error_fn, "Hash missmatch.")
+                instance.client_bridge.exec_on_main(
+                    error_fn, "Hash missmatch.")
             return
         except AtomsFailToDownloadImage:
             if error_fn:
@@ -184,21 +185,23 @@ class Atom(AtomModel):
 
         date = datetime.datetime.now().isoformat()
         relative_path = str(uuid.uuid4()) + ".atom"
-        atom_path = AtomsPathsUtils.get_atom_path(instance.config, relative_path)
+        atom_path = AtomsPathsUtils.get_atom_path(
+            instance.config, relative_path)
         chroot_path = os.path.join(atom_path, "chroot")
         atom = cls(
             instance, name, distribution.distribution_id,
             relative_path, date,
-            bind_themes=False, 
-            bind_icons=False, 
-            bind_fonts=False, 
+            bind_themes=False,
+            bind_icons=False,
+            bind_fonts=False,
             bind_extra_mounts=[]
         )
         os.makedirs(chroot_path)
 
         # make some extra/common paths
         os.makedirs(os.path.join(chroot_path, "root"), exist_ok=True)
-        os.makedirs(os.path.join(chroot_path, "usr/lib/xorg/modules/dri"), exist_ok=True)
+        os.makedirs(os.path.join(
+            chroot_path, "usr/lib/xorg/modules/dri"), exist_ok=True)
         os.makedirs(os.path.join(chroot_path, "usr/lib64/dri"), exist_ok=True)
 
         if config_fn:
@@ -228,7 +231,7 @@ class Atom(AtomModel):
 
         # save atom configuration
         atom.save()
-        
+
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
 
@@ -275,7 +278,7 @@ class Atom(AtomModel):
             instance.client_bridge.exec_on_main(finalizing_fn, 1)
 
         return atom
-    
+
     @classmethod
     def new_system_shell(cls, instance: 'AtomsInstance'):
         return cls(instance, "system-shell", system_shell=True)
@@ -335,7 +338,7 @@ class Atom(AtomModel):
         _command = self.__distrobox_wrapper.get_distrobox_command_for_container(
             self._container_id, command)
         return _command, environment, self.root_path
-    
+
     def __generate_system_shell_command(self) -> tuple:
         _command = [os.environ["SHELL"]]
         return _command, [], "/"
@@ -354,7 +357,8 @@ done
 
     def destroy(self):
         if self.is_distrobox_container or self._system_shell:
-            self.__distrobox_wrapper.destroy_container(self._container_id, self._name)
+            self.__distrobox_wrapper.destroy_container(
+                self._container_id, self._name)
             return
 
         # NOTE: might not be the best way to do this but shutil raises an
@@ -383,7 +387,7 @@ done
 
     def stop_distrobox_container(self):
         self.__distrobox_wrapper.stop_container(self._container_id)
-    
+
     def set_bind_themes(self, status: bool):
         self._bind_themes = status
         self.save()

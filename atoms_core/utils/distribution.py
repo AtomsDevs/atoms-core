@@ -81,5 +81,5 @@ class AtomsDistributionsUtils:
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
-            distributions.append(VoidLinux()) # libc.so.6 not found
+            distributions.append(VoidLinux())  # libc.so.6 not found
         return distributions

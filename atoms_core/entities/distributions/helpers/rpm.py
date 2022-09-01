@@ -33,7 +33,7 @@ Good luck!
             "/var/lib",
             "/var/log",
         ]
-        
+
         if not os.path.exists(macros_path):
             os.makedirs(macros_path)
 

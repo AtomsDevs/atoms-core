@@ -50,12 +50,13 @@ class AtomsBackend:
                 try:
                     atoms[atom] = Atom.load(self.__instance, atom)
                 except AtomsConfigFileNotFound:
-                    logger.warning("Atom configuration file not found with path: {}".format(atom))
+                    logger.warning(
+                        "Atom configuration file not found with path: {}".format(atom))
                     continue
 
         if self.__distrobox_support and self.has_distrobox_support:
             atoms.update(self.__list_distrobox_atoms())
-        
+
         if "DEV_BASH" in os.environ:
             atoms["DEV_BASH"] = Atom.new_system_shell(self.__instance)
 
@@ -78,10 +79,10 @@ class AtomsBackend:
         self,
         name: str,
         atom_type: 'AtomType',
-        distribution: 'AtomDistribution'=None,
-        architecture: str=None,
-        release: str=None,
-        container_image: str=None,
+        distribution: 'AtomDistribution' = None,
+        architecture: str = None,
+        release: str = None,
+        container_image: str = None,
         download_fn: callable = None,
         config_fn: callable = None,
         unpack_fn: callable = None,
@@ -94,9 +95,9 @@ class AtomsBackend:
                 self.__instance, name, distribution, architecture, release,
                 download_fn, config_fn, unpack_fn, finalizing_fn, error_fn
             )
-        elif atom_type == AtomType.DISTROBOX_CONTAINER:
+        if atom_type == AtomType.DISTROBOX_CONTAINER:
             return Atom.new_container(
-                self.__instance, name, container_image, distrobox_fn, 
+                self.__instance, name, container_image, distrobox_fn,
                 finalizing_fn, error_fn
             )
 

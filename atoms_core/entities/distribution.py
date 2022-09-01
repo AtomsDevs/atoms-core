@@ -68,11 +68,12 @@ class AtomDistribution:
     def get_remote_hash(self, architecture: str, release: str) -> str:
         if self.remote_hash_structure is None:
             return
-            
+
         return self.remote_hash_structure.format(release, architecture)
 
     def get_image_name(self, architecture: str, release: str) -> str:
-        remote = HashUtils.get_string_hash(self.get_remote(architecture, release), "sha1")
+        remote = HashUtils.get_string_hash(
+            self.get_remote(architecture, release), "sha1")
         _repr = f"{self.distribution_id}-{release}-{architecture}-{remote}"
         return _repr.replace(".", "-").replace("_", "-").replace(" ", "-").lower()
 
@@ -110,22 +111,23 @@ class AtomDistribution:
 
     def is_container_image(self, image: str) -> bool:
         return self.container_image_name in image
-    
+
     def post_unpack(self, chroot: str):
         pass
-    
+
     def set_motd(self, chroot: str):
         if self.motd:
             with open(os.path.join(chroot, "etc/profile"), "a") as f:
                 f.write("cat /etc/motd\n")
             with open(os.path.join(chroot, "etc/motd"), "w") as f:
-                f.write(self.motd 
-                    + "\n\nTo disable this message, remove 'cat /etc/motd' from /etc/profile.\n")
+                f.write(self.motd
+                        + "\n\nTo disable this message, remove 'cat /etc/motd' from /etc/profile.\n")
 
     def _download_resource(self, url: str):
         temp_path = tempfile.gettempdir()
         temp_resource_folder = os.path.join(temp_path, str(uuid.uuid4()))
-        temp_resource_file = os.path.join(temp_resource_folder, os.path.basename(url))
+        temp_resource_file = os.path.join(
+            temp_resource_folder, os.path.basename(url))
 
         os.makedirs(temp_resource_folder)
 
@@ -140,7 +142,7 @@ class AtomDistribution:
                     f.flush()
 
         return temp_resource_file
-    
+
     def _extract_resource(self, resource_file: str, path: str):
         if not os.path.exists(path):
             os.makedirs(path)
@@ -162,7 +164,8 @@ class AtomDistribution:
         links = re.findall(r'<a href="(.*?)">(.*?)</a>', html)
 
         if len(links) == 0:
-            raise AtomsMisconfiguredDistribution(f"No directories found in {url}")
+            raise AtomsMisconfiguredDistribution(
+                f"No directories found in {url}")
 
         links = [link[1].replace('/', '').strip() for link in links]
         links = [link for link in links if link[:4].isdigit()]

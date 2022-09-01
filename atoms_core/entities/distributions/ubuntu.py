@@ -38,10 +38,10 @@ Good luck!
         )
         build = self._get_latest_remote_dir(base_url)
         return "{0}/{1}".format(base_url, build)
-        
+
     def get_remote(self, architecture: str, release: str) -> str:
         return "{0}/rootfs.tar.xz".format(self.__get_base_path(architecture, release))
-            
+
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
 
@@ -63,10 +63,11 @@ Good luck!
             data = data.replace("_apt:x", "#_apt:x")
             with open(os.path.join(chroot, "etc/passwd"), "w") as f:
                 f.write(data)
-        
+
         # workaround Code:PATH_NOT_DEFINED
         with open(os.path.join(chroot, "etc/profile.d/atom.sh"), "w") as f:
-            f.write("export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+            f.write(
+                "export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
 
         # share/fake current user
         self.set_current_user(chroot)

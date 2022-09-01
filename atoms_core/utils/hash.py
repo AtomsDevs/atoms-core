@@ -43,7 +43,7 @@ class HashUtils:
                     break
                 hash_temp.update(buffer)
         return hash_temp.hexdigest()
-    
+
     @staticmethod
     def get_string_hash(string: str, hash_type: str) -> str:
         """

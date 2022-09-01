@@ -6,7 +6,7 @@ from atoms_core.entities.distributions.helpers.common import CommonDistribution
 class Fedora(AtomDistribution, RpmDistribution, CommonDistribution):
     def __init__(self):
         super().__init__(
-            distribution_id="fedora", 
+            distribution_id="fedora",
             name="Fedora",
             logo="fedora-symbolic",
             releases=["36"],
@@ -26,10 +26,10 @@ class Fedora(AtomDistribution, RpmDistribution, CommonDistribution):
         )
         build = self._get_latest_remote_dir(base_url)
         return "{0}/{1}".format(base_url, build)
-        
+
     def get_remote(self, architecture: str, release: str) -> str:
         return "{0}/rootfs.tar.xz".format(self.__get_base_path(architecture, release))
-            
+
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
 

@@ -38,4 +38,3 @@ class ResultModel:
     @property
     def message(self) -> str:
         return self.__message
-        

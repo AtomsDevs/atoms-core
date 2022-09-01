@@ -42,7 +42,7 @@ class DistroboxWrapper:
 
         for line in output:
             _parts = line.split("|")
-            
+
             if len(_parts) == 4:
                 _id, _name, _, _image = _parts
             elif len(_parts) == 5:
@@ -51,7 +51,8 @@ class DistroboxWrapper:
             containers[_id.strip()] = {
                 "image": _image.strip(),
                 "name": _name.strip(),
-                "creation_date": datetime.datetime.now().isoformat(),  # TODO: send PR to implement this
+                # TODO: send PR to implement this
+                "creation_date": datetime.datetime.now().isoformat(),
             }
 
         return containers
@@ -84,15 +85,16 @@ class DistroboxWrapper:
     def stop_container(self, container_id: str):
         command = [self.__binary_path, "stop", "-f", container_id]
         CommandUtils.run_command(command, allow_flatpak_host=True)
-    
+
     def new_container(self, name: str, image: str) -> str:
         command = [
-            self.__binary_path, "create", 
+            self.__binary_path, "create",
             "--image", image,
             "--name", name
         ]
         try:
-            CommandUtils.run_command(command, output=True, wait=True, allow_flatpak_host=True)
+            CommandUtils.run_command(
+                command, output=True, wait=True, allow_flatpak_host=True)
         except Exception as e:
             # TODO: improve error message
             raise AtomsFailToCreateContainer(str(e))
@@ -103,7 +105,8 @@ class DistroboxWrapper:
                 return _id
 
         raise AtomsFailToCreateContainer(
-            "A container with name '{}' was not found after creation. Somethings goes wrong.".format(name)
+            "A container with name '{}' was not found after creation. Somethings goes wrong.".format(
+                name)
         )
 
     @property

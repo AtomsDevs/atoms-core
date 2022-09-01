@@ -60,9 +60,9 @@ class ProotWrapper:
             working_directory = "/"
 
         _command = [
-            ("env", "bin"), "-i", 
-            "HOSTNAME=atom", 
-            f"TERM=xterm-256color", 
+            ("env", "bin"), "-i",
+            "HOSTNAME=atom",
+            f"TERM=xterm-256color",
             "HOME=/root",
             "TMPDIR=/tmp",
             f"DISPLAY={os.environ['DISPLAY']}",
@@ -75,7 +75,7 @@ class ProotWrapper:
         # to the default paths if the a command is provided
         if command:
             _command += ["PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"]
-        
+
         _command += [
             self.__binary_path,
             "-w", working_directory,
@@ -99,8 +99,10 @@ class ProotWrapper:
         _command += bind_if_exists("/tmp/")
         _command += bind_if_exists(f"{Path.home()}")
         # _command += bind_if_exists(f"/run/user/{os.getuid()}:/run/user/{os.getuid()}")
-        _command += bind_if_exists("/usr/lib/x86_64-linux-gnu/GL/lib/dri/", "/usr/lib/xorg/modules/dri")
-        _command += bind_if_exists("/usr/lib/x86_64-linux-gnu/GL/lib/dri/", "/usr/lib64/dri")
+        _command += bind_if_exists("/usr/lib/x86_64-linux-gnu/GL/lib/dri/",
+                                   "/usr/lib/xorg/modules/dri")
+        _command += bind_if_exists(
+            "/usr/lib/x86_64-linux-gnu/GL/lib/dri/", "/usr/lib64/dri")
         # the following are handled by the Atom instance
         #_command += bind_if_exists("/usr/share/themes:/usr/share/themes")
         #_command += bind_if_exists("/usr/share/fonts:/usr/share/fonts")
@@ -110,7 +112,7 @@ class ProotWrapper:
             for bind_mount in bind_mounts:
                 host_mount, chroot_mount = bind_mount
                 _command += bind_if_exists(host_mount, chroot_mount)
-        
+
         # passwd and group cannot be binded, this will replace the existing
         # files, invalidating users/groups made by the user in the chroot
         # here we make a temporary copy of the files. merge them and bind
@@ -131,7 +133,7 @@ class ProotWrapper:
 
         # with open(system_group, "r") as f:
             # system_group_rows = f.readlines()
-            
+
         # shutil.copyfile(chroot_passwd, temp_passwd)
         # shutil.copyfile(chroot_group, temp_group)
 
@@ -145,7 +147,7 @@ class ProotWrapper:
             # rows = f.readlines()
             # for row in system_group_rows:
                 # if row not in rows:
-                    # f.write(row)
+                # f.write(row)
 
         # command = _command + [
             # passwd disabled, I'm trying to make the user root of the chroot

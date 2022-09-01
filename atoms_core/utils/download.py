@@ -96,9 +96,10 @@ class DownloadUtils:
                 logger.error(
                     f"Download failed! The downloaded file is corrupted.\n\tExpected {self.hash_value} got {_hash}.")
                 raise AtomsHashMissmatchError()
-        
+
         if self.rename:
-            os.rename(self.file, os.path.join(os.path.dirname(self.file), self.rename))
+            os.rename(self.file, os.path.join(
+                os.path.dirname(self.file), self.rename))
 
         return True
 

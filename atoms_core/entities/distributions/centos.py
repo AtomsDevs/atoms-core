@@ -26,10 +26,10 @@ class Centos(AtomDistribution, RpmDistribution, CommonDistribution):
         )
         build = self._get_latest_remote_dir(base_url)
         return "{0}/{1}".format(base_url, build)
-        
+
     def get_remote(self, architecture: str, release: str) -> str:
         return "{0}/rootfs.tar.xz".format(self.__get_base_path(architecture, release))
-            
+
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
 

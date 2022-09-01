@@ -62,11 +62,11 @@ class AtomModel:
     @property
     def name(self) -> str:
         return self._name
-    
+
     @property
     def relative_path(self) -> str:
         return self._relative_path
-    
+
     @property
     def creation_date(self) -> str:
         return self._creation_date
@@ -74,7 +74,7 @@ class AtomModel:
     @property
     def update_date(self) -> str:
         return self._update_date
-    
+
     @property
     def distribution_id(self) -> str:
         return self._distribution_id
@@ -90,7 +90,8 @@ class AtomModel:
         if self.is_distrobox_container or self._system_shell:
             return ""
         return os.path.join(
-            AtomsPathsUtils.get_atom_path(self._instance.config, self._relative_path),
+            AtomsPathsUtils.get_atom_path(
+                self._instance.config, self._relative_path),
             "chroot"
         )
 
@@ -111,7 +112,7 @@ class AtomModel:
     @property
     def enter_command(self) -> list:
         return self.generate_command([])
-    
+
     @property
     def untracked_enter_command(self) -> list:
         return self.generate_command([], track_exit=False)
@@ -129,13 +130,13 @@ class AtomModel:
     @property
     def is_system_shell(self) -> bool:
         return self._system_shell
-    
+
     @property
     def aid(self) -> str:
         if self.is_distrobox_container or self._system_shell:
             return self._container_id
         return self._relative_path
-    
+
     @property
     def container_id(self) -> str:
         return self._container_id
@@ -155,7 +156,7 @@ class AtomModel:
     @property
     def bind_fonts(self) -> bool:
         return self._bind_fonts
-    
+
     @property
     def bind_extra_mounts(self) -> list:
         return self._bind_extra_mounts

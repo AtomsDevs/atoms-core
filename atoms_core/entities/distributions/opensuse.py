@@ -37,6 +37,6 @@ class OpenSuse(AtomDistribution, RpmDistribution, CommonDistribution):
     def post_unpack(self, chroot: str):
         # workaround Code:RPM_UNPK_NO_PERM
         self.set_macros(chroot)
-        
+
         # share/fake current user
         self.set_current_user(chroot)
