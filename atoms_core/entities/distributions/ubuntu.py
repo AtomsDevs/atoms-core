@@ -1,9 +1,10 @@
 import os
 
 from atoms_core.entities.distribution import AtomDistribution
+from atoms_core.entities.distributions.helpers.common import CommonDistribution
 
 
-class Ubuntu(AtomDistribution):
+class Ubuntu(AtomDistribution, CommonDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="ubuntu",
@@ -66,3 +67,6 @@ Good luck!
         # workaround Code:PATH_NOT_DEFINED
         with open(os.path.join(chroot, "etc/profile.d/atom.sh"), "w") as f:
             f.write("export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+
+        # share/fake current user
+        self.set_current_user(chroot)

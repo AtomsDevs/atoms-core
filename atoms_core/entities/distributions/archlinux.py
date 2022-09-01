@@ -1,9 +1,10 @@
 import os
 
 from atoms_core.entities.distribution import AtomDistribution
+from atoms_core.entities.distributions.helpers.common import CommonDistribution
 
 
-class ArchLinux(AtomDistribution):
+class ArchLinux(AtomDistribution, CommonDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="archlinux", 
@@ -55,3 +56,6 @@ Good luck!
                         f.write("IgnorePkg = glibc\n")
                         continue
                     f.write(line)
+                    
+        # share/fake current user
+        self.set_current_user(chroot)

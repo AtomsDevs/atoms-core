@@ -1,8 +1,9 @@
 from atoms_core.entities.distribution import AtomDistribution
 from atoms_core.entities.distributions.helpers.rpm import RpmDistribution
+from atoms_core.entities.distributions.helpers.common import CommonDistribution
 
 
-class OpenSuse(AtomDistribution, RpmDistribution):
+class OpenSuse(AtomDistribution, RpmDistribution, CommonDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="opensuse",
@@ -36,3 +37,6 @@ class OpenSuse(AtomDistribution, RpmDistribution):
     def post_unpack(self, chroot: str):
         # workaround Code:RPM_UNPK_NO_PERM
         self.set_macros(chroot)
+        
+        # share/fake current user
+        self.set_current_user(chroot)

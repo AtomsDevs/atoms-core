@@ -1,7 +1,8 @@
 from atoms_core.entities.distribution import AtomDistribution
+from atoms_core.entities.distributions.helpers.common import CommonDistribution
 
 
-class VoidLinux(AtomDistribution):
+class VoidLinux(AtomDistribution, CommonDistribution):
     def __init__(self):
         super().__init__(
             distribution_id="voidlinux",
@@ -29,3 +30,7 @@ class VoidLinux(AtomDistribution):
             
     def get_remote_hash(self, architecture: str, release: str) -> str:
         return "{0}/SHA256SUMS".format(self.__get_base_path(architecture, release))
+
+    def post_unpack(self, chroot: str):
+        # share/fake current user
+        self.set_current_user(chroot)
