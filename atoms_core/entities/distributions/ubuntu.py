@@ -58,6 +58,8 @@ Good luck!
         with open(os.path.join(chroot, "etc/apt/apt.conf.d/01atom"), "w") as f:
             f.write("APT::Sandbox \"0\";")
             f.write("APT::Sandbox::User \"root\";")
+            f.write("Dir::Cache \"/tmp/apt\";")
+
         with open(os.path.join(chroot, "etc/passwd"), "r") as f:
             data = f.read()
             data = data.replace("_apt:x", "#_apt:x")
