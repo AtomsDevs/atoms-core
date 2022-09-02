@@ -14,7 +14,7 @@ We are aware of a problem installing some RPM packages that
 fail to extract. We are looking for a solution.
 
 To help us debug this, please use the dnf command with the
-"--rpmverbose debug" option.
+"--rpmverbosity debug" option.
 
 Report bugs in the Atoms repository.
 Good luck!
