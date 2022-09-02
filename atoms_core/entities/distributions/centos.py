@@ -17,7 +17,7 @@ class Centos(AtomDistribution, RpmDistribution, CommonDistribution):
             root="",
             container_image_name="centos",
             default_cmd=["bash", "--login"],
-            motd=self._rpm_motd("AlmaLinux")
+            motd=self._rpm_motd("Centos")
         )
 
     def __get_base_path(self, architecture: str, release: str) -> str:
