@@ -66,6 +66,7 @@ class ProotWrapper:
             "HOME=/root",
             "TMPDIR=/tmp",
             f"DISPLAY={os.environ['DISPLAY']}",
+            "XDG_DATA_DIRS=/usr/local/share/:/usr/share/"
         ]
 
         if "ATOMS_NO_SECCOMP" in os.environ:
