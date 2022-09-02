@@ -82,6 +82,7 @@ class ProotWrapper:
             "-w", working_directory,
             "-0",
             "--kill-on-exit",
+            "--link2symlink",
             "-r", chroot_path,
         ]
 
