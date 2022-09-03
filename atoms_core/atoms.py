@@ -110,8 +110,12 @@ class AtomsBackend:
         return len(self.__atoms) > 0
 
     @property
-    def local_images(self) -> list:
+    def local_images(self) -> dict:
         return AtomsImageUtils.get_image_list(self.__config)
+    
+    @property
+    def local_images_grouped(self) -> dict:
+        return AtomsImageUtils.get_image_list_grouped(self.__config)
 
     @property
     def has_distrobox_support(self) -> bool:

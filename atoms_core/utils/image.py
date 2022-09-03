@@ -20,6 +20,7 @@ import requests
 
 from atoms_core.utils.file import FileUtils
 from atoms_core.utils.download import DownloadUtils
+from atoms_core.utils.distribution import AtomsDistributionsUtils
 from atoms_core.entities.image import AtomImage
 from atoms_core.exceptions.image import AtomsFailToDownloadImage
 
@@ -41,16 +42,31 @@ class AtomsImageUtils:
         hash_type = distribution.remote_hash_type
 
         if not os.path.exists(image_path):
-            if not DownloadUtils(instance, remote, image_path, update_fn, remote_hash, hash_type, image_name).download():
+            if not DownloadUtils(instance, remote, image_path, update_fn, \
+                                 remote_hash, hash_type, image_name).download():
                 raise AtomsFailToDownloadImage(remote)
 
         return AtomImage(image_name, image_path, distribution.root)
 
     @staticmethod
-    def get_image_list(config: "AtomsConfig"):
+    def get_image_list(config: "AtomsConfig") -> dict:
         image_list = []
         for image in os.listdir(config.atoms_images):
             image_list.append(
                 AtomImage(image, os.path.join(config.atoms_images, image)))
         image_list.sort(key=lambda x: x.name)
+
         return image_list
+    
+    @staticmethod
+    def get_image_list_grouped(config: "AtomsConfig") -> dict:
+        image_list = AtomsImageUtils.get_image_list(config)
+        image_list_grouped = {}
+        for image in image_list:
+            _distribution = AtomsDistributionsUtils.get_distribution_by_image(
+                image).name
+            if _distribution not in image_list_grouped:
+                image_list_grouped[_distribution] = []
+            image_list_grouped[_distribution].append(image)
+
+        return image_list_grouped

@@ -111,6 +111,9 @@ class AtomDistribution:
 
     def is_container_image(self, image: str) -> bool:
         return self.container_image_name in image
+    
+    def is_image(self, image: str) -> bool:
+        return self.distribution_id in image.name.lower()
 
     def post_unpack(self, chroot: str):
         pass

@@ -83,3 +83,10 @@ class AtomsDistributionsUtils:
             distributions.append(ArchLinux())
             distributions.append(VoidLinux())  # libc.so.6 not found
         return distributions
+    
+    @staticmethod
+    def get_distribution_by_image(image: 'AtomImage') -> AtomDistribution:
+        for distribution in AtomsDistributionsUtils.get_distributions():
+            if distribution.is_image(image):
+                return distribution
+        return Unknown()
