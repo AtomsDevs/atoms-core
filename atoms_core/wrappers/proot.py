@@ -24,6 +24,7 @@ from pathlib import Path
 
 from atoms_core.utils.command import CommandUtils
 from atoms_core.exceptions.common import AtomsNoBinaryFound
+from atoms_core.params.paths import AtomsPaths
 
 
 logger = logging.getLogger("atoms.wrappers.proot")
@@ -59,6 +60,11 @@ class ProotWrapper:
         if working_directory is None:
             working_directory = "/"
 
+        # check whether Atoms was launched with HIGH_PRIVILEGES
+        high_privileges = "HIGH_PRIVILEGES" in os.environ
+        if high_privileges:
+            self.install_locally()
+
         _command = [
             ("env", "bin"), "-i",
             "HOSTNAME=atom",
@@ -78,7 +84,7 @@ class ProotWrapper:
             _command += ["PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin"]
 
         _command += [
-            self.__binary_path,
+            self.proot_local_path if high_privileges else self.__binary_path,
             "-w", working_directory,
             "-0",
             "--kill-on-exit",
@@ -86,6 +92,7 @@ class ProotWrapper:
             "-r", chroot_path,
         ]
 
+        _command += bind_if_exists(chroot_path, "/")
         _command += bind_if_exists("/etc/host.conf")
         _command += bind_if_exists("/etc/hosts")
         _command += bind_if_exists("/etc/nsswitch.conf")
@@ -158,5 +165,18 @@ class ProotWrapper:
         # ] + command
 
         command = _command + command
+        return CommandUtils.get_valid_command(command, allow_flatpak_host=high_privileges)
 
-        return CommandUtils.get_valid_command(command)
+    def install_locally(self):
+        if not os.path.exists(self.__binary_path):
+            return
+        
+        try:
+            shutil.copyfile(self.__binary_path, self.proot_local_path)
+            os.chmod(self.proot_local_path, 0o755)
+        except Exception as e:
+            logging.debug(e)
+    
+    @property
+    def proot_local_path(self):
+        return str(Path(AtomsPaths.app_data, "proot"))
