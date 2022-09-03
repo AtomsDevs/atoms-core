@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 import datetime
 
 from atoms_core.utils.paths import AtomsPathsUtils
@@ -136,6 +137,15 @@ class AtomModel:
         if self.is_distrobox_container or self._system_shell:
             return self._container_id
         return self._relative_path
+    
+    @property
+    def short_aid(self) -> str:
+        if re.match(
+            r"^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}.atom$",
+            self.aid,
+        ):
+            return self.aid.split("-")[0]
+        return self.aid
 
     @property
     def container_id(self) -> str:
