@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import datetime
 
 from atoms_core.utils.file import FileUtils
 
@@ -38,3 +39,11 @@ class ImageModel:
     @property
     def human_size(self):
         return FileUtils.get_human_size(self.size)
+    
+    @property
+    def date(self):
+        return os.path.getmtime(self.path)
+    
+    @property
+    def formatted_date(self):
+        return datetime.datetime.fromtimestamp(self.date).strftime("%Y-%m-%d %H:%M:%S")
