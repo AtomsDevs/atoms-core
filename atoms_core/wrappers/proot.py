@@ -71,7 +71,7 @@ class ProotWrapper:
             f"TERM=xterm-256color",
             "HOME=/root",
             "TMPDIR=/tmp",
-            f"DISPLAY={os.environget('DISPLAY', ':0')}",
+            f"DISPLAY={os.environ.get('DISPLAY', ':0')}",
             "XDG_DATA_DIRS=/usr/local/share/:/usr/share/"
         ]
 
