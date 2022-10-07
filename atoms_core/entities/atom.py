@@ -219,6 +219,7 @@ class Atom(AtomModel):
         # Finalize and distro specific workarounds
         # install servicectl to be able to manage services in the chroot
         ServicectlWrapper().install_to_path(os.path.join(atom.fs_path, "usr/local/bin"))
+        ServicectlWrapper().link_to_systemctl(atom.fs_path)
 
         if finalizing_fn:
             instance.client_bridge.exec_on_main(finalizing_fn, 0)

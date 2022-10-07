@@ -44,6 +44,13 @@ class ServicectlWrapper:
         if os.path.exists(os.path.join(path, "serviced")):
             os.remove(os.path.join(path, "serviced"))
         shutil.copy(self.__serviced_path, path)
+        
+    def link_to_systemctl(self, path: str):
+        if not self.is_supported:
+            return
+
+        with open(os.path.join(path, "etc/bash.bashrc"), "a") as bashrc:
+            bashrc.write(f"alias systemctl=/usr/local/bin/servicectl")
 
     @property
     def is_supported(self) -> bool:
