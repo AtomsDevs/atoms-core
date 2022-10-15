@@ -9,7 +9,7 @@ class OpenSuse(AtomDistribution, RpmDistribution, CommonDistribution):
             distribution_id="opensuse",
             name="OpenSUSE",
             logo="opensuse-symbolic",
-            releases=["Leap_15.1"],
+            releases=["Leap_15.4"],
             remote_structure="https://download.opensuse.org/repositories/Cloud:/Images:/{0}/images/openSUSE-{2}-OpenStack-rootfs.{1}.tar.xz",
             remote_hash_structure="https://download.opensuse.org/repositories/Cloud:/Images:/{0}/images/openSUSE-{2}-OpenStack-rootfs.{1}.tar.xz.sha256",
             remote_hash_type="sha256",

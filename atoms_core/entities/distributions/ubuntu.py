@@ -10,7 +10,7 @@ class Ubuntu(AtomDistribution, CommonDistribution):
             distribution_id="ubuntu",
             name="Ubuntu",
             logo="ubuntu-symbolic",
-            releases=["jammy"],
+            releases=["jammy", "focal", "devel"],
             remote_structure=None,
             remote_hash_structure=None,
             remote_hash_type="sha256",
