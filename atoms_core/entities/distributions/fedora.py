@@ -9,7 +9,7 @@ class Fedora(AtomDistribution, RpmDistribution, CommonDistribution):
             distribution_id="fedora",
             name="Fedora",
             logo="fedora-symbolic",
-            releases=["36"],
+            releases=["36", "37"],
             remote_structure=None,
             remote_hash_structure=None,
             remote_hash_type="sha256",
