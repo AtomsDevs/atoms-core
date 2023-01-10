@@ -8,7 +8,7 @@ class Debian(AtomDistribution, CommonDistribution):
             distribution_id="debian",
             name="Debian",
             logo="debian-symbolic",
-            releases=["bullseye", "buster"],
+            releases=["bullseye", "buster", "sid"],
             remote_structure=None,
             remote_hash_structure=None,
             remote_hash_type="sha256",
