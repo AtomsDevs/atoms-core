@@ -59,7 +59,9 @@ class CommandUtils:
         """
         try:
             proc = subprocess.check_output(
-                CommandUtils.get_flatpak_command(["which", binary])
+                CommandUtils.get_flatpak_command(
+                    ["sh", "-c", "export PATH=$PATH:/usr/lib/apx/ && which " + binary]
+                )
             )
             return proc.decode("utf-8").strip()
         except (FileNotFoundError, AtomsNoBinaryFound):
