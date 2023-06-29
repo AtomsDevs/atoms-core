@@ -43,15 +43,17 @@ class DistroboxWrapper:
         for line in output:
             _parts = line.split("|")
 
-            if len(_parts) == 4:
+            if len(_parts) == 4: # dbox < 1.4.0
                 _id, _name, _, _image = _parts
-            elif len(_parts) == 5:
+            elif len(_parts) == 5: # dbox >= 1.4.0
                 _id, _name, _, _image, _ = _parts
+            elif len(_parts) == 6: # dbox >= 1.5.0
+                _id, _name, _, _, _, _image = _parts
 
             containers[_id.strip()] = {
                 "image": _image.strip(),
                 "name": _name.strip(),
-                # TODO: send PR to implement this
+                # TODO: use the container engine filters to implement this
                 "creation_date": datetime.datetime.now().isoformat(),
             }
 
