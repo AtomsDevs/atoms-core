@@ -9,7 +9,7 @@ class AlmaLinux(AtomDistribution, RpmDistribution, CommonDistribution):
             distribution_id="almalinux",
             name="AlmaLinux",
             logo="almalinux-symbolic",
-            releases=["9", ],
+            releases=["9", "8"],
             remote_structure=None,
             remote_hash_structure=None,
             remote_hash_type="sha256",
