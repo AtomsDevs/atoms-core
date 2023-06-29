@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Atoms Core',
-    version='1.1.1',
+    version='1.1.2',
     packages=find_packages(),
     url='https://github.com/AtomsDevs/atoms-core',
     license='GPL-3.0-only',
