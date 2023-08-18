@@ -22,7 +22,6 @@ from atoms_core.entities.distributions import *
 
 
 class AtomsDistributionsUtils:
-
     @staticmethod
     def get_distribution(distribution_id: str) -> AtomDistribution:
         # Stable (know-working) images
@@ -42,6 +41,8 @@ class AtomsDistributionsUtils:
             return VoidLinux()
         if distribution_id == "debian":
             return Debian()
+        if distribution_id == "vanilla":
+            return VanillaOS()
         if distribution_id == "opensuse":
             return OpenSuse()
         if distribution_id == "gentoo":
@@ -69,23 +70,24 @@ class AtomsDistributionsUtils:
     @staticmethod
     def get_distributions() -> list:
         distributions = [
-            Ubuntu(),
             AlpineLinux(),
+            Ubuntu(),
             Fedora(),
-            Gentoo(),
             AlmaLinux(),
             RockyLinux(),
             Centos(),
-            OpenSuse(),
             Debian(),
+            VanillaOS(),
+            OpenSuse(),
+            Gentoo(),
         ]
         if "SHOW_EXPERIMENTAL_IMAGES" in os.environ:
             distributions.append(ArchLinux())
             distributions.append(VoidLinux())  # libc.so.6 not found
         return distributions
-    
+
     @staticmethod
-    def get_distribution_by_image(image: 'AtomImage') -> AtomDistribution:
+    def get_distribution_by_image(image: "AtomImage") -> AtomDistribution:
         for distribution in AtomsDistributionsUtils.get_distributions():
             if distribution.is_image(image):
                 return distribution
