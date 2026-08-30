@@ -1,0 +1,6 @@
+[Plugin]
+Loader=C
+Module=registry-duplicate
+Name=Duplicate registry test provider
+X-Atoms-Provider-ABI=1
+X-Atoms-Provider-Id=test

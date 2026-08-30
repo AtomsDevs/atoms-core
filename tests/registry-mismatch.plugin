@@ -1,0 +1,6 @@
+[Plugin]
+Loader=C
+Module=registry-mismatch
+Name=Mismatched registry test provider
+X-Atoms-Provider-ABI=1
+X-Atoms-Provider-Id=declared

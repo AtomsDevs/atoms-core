@@ -1,14 +1,16 @@
 # Atoms Core
-Atoms Core allows you to create and manage your own chroots and distrobox containers.
+Atoms Core is the Vala library used to create and manage Atoms environments.
 
-This is meant to be used by Atoms clients (e.g. [Atoms GTK](https://github.com/AtomsDevs/Atoms)).
+It provides the shared models and provider ABI used by [Atoms](https://github.com/AtomsDevs/Atoms) and [Atoms CLI](https://github.com/AtomsDevs/atoms-cli).
 
-[![CodeFactor](https://www.codefactor.io/repository/github/atomsdevs/atoms-core/badge)](https://www.codefactor.io/repository/github/atomsdevs/atoms-core)
+Providers are native libpeas modules and keep backend-specific code outside the clients.
 
 ## Dependencies
-Atoms Core only need the `orjson` python package.
+Atoms Core requires GLib, libgee, and libpeas 2.
 
 ## Install
-```bash
-python setup.py install  # --user for user-local install
+```sh
+meson setup build
+meson compile -C build
+meson install -C build
 ```
