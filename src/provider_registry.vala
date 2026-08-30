@@ -2,6 +2,16 @@ using Gee;
 
 namespace Atoms {
 
+    [CCode (
+        cname = "atoms_provider_registry_create_extension",
+        cheader_filename = "provider_loader.h"
+    )]
+    private static extern GLib.Object create_provider_extension (
+        Peas.Engine engine,
+        Peas.PluginInfo info,
+        GLib.Type extension_type
+    );
+
     public class ProviderRegistry : Object {
         private Peas.Engine engine;
         private ArrayList<Provider> loaded_providers;
@@ -93,11 +103,10 @@ namespace Atoms {
                 return;
             }
 
-            var extension = engine.create_extension_with_properties (
+            var extension = create_provider_extension (
+                engine,
                 info,
-                typeof (Provider),
-                new string[0],
-                new Value[0]
+                typeof (Provider)
             ) as Provider;
             if (extension == null ||
                 extension.abi_version != PROVIDER_ABI ||

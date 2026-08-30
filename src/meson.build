@@ -16,6 +16,7 @@ build_config = configure_file(
 
 atoms_core_sources = files(
   'models.vala',
+  'provider_loader.c',
   'provider.vala',
   'provider_registry.vala'
 ) + [build_config]
