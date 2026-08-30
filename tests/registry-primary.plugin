@@ -2,5 +2,5 @@
 Loader=C
 Module=registry-primary
 Name=Primary registry test provider
-X-Atoms-Provider-ABI=1
+X-Atoms-Provider-ABI=2
 X-Atoms-Provider-Id=test

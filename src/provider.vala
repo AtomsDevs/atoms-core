@@ -2,9 +2,11 @@ using Gee;
 
 namespace Atoms {
 
-    public const uint PROVIDER_ABI = 1;
+    public const uint PROVIDER_ABI = 2;
 
     public interface Provider : Object {
+        public signal void operation_progress (string message);
+
         public abstract string id { owned get; }
         public abstract string name { owned get; }
         public abstract uint abi_version { get; }

@@ -2,5 +2,5 @@
 Loader=C
 Module=registry-invalid
 Name=Invalid registry test provider
-X-Atoms-Provider-ABI=2
+X-Atoms-Provider-ABI=1
 X-Atoms-Provider-Id=invalid
