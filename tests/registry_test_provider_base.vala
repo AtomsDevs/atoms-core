@@ -33,12 +33,33 @@ namespace Atoms {
 
         public string[] shell_argv (Environment environment,
                                     string command,
-                                    string[] arguments) throws Error {
+                                    string[] arguments,
+                                    bool terminal) throws Error {
+            throw new CoreError.NOT_SUPPORTED ("not supported by registry test provider");
+        }
+
+        public string[] update_argv (Environment environment) throws Error {
             throw new CoreError.NOT_SUPPORTED ("not supported by registry test provider");
         }
 
         public async Environment update_policy (
             Environment environment,
+            Cancellable? cancellable = null
+        ) throws Error {
+            throw new CoreError.NOT_SUPPORTED ("not supported by registry test provider");
+        }
+
+        public async ArrayList<DesktopApplication> list_applications (
+            Environment environment,
+            Cancellable? cancellable = null
+        ) throws Error {
+            return new ArrayList<DesktopApplication> ();
+        }
+
+        public async void set_application_exported (
+            Environment environment,
+            DesktopApplication application,
+            bool exported,
             Cancellable? cancellable = null
         ) throws Error {
             throw new CoreError.NOT_SUPPORTED ("not supported by registry test provider");

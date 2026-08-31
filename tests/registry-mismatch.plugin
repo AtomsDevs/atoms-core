@@ -2,5 +2,5 @@
 Loader=C
 Module=registry-mismatch
 Name=Mismatched registry test provider
-X-Atoms-Provider-ABI=2
+X-Atoms-Provider-ABI=4
 X-Atoms-Provider-Id=declared

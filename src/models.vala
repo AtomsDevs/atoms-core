@@ -16,6 +16,7 @@ namespace Atoms {
         public bool display { get; set; default = true; }
         public bool usb { get; set; default = false; }
         public bool input { get; set; default = false; }
+        public bool audio { get; set; default = false; }
         public bool host_commands { get; set; default = false; }
 
         public bool can_network { get; set; default = false; }
@@ -23,6 +24,7 @@ namespace Atoms {
         public bool can_display { get; set; default = false; }
         public bool can_usb { get; set; default = false; }
         public bool can_input { get; set; default = false; }
+        public bool can_audio { get; set; default = false; }
         public bool can_host_commands { get; set; default = false; }
 
         public EnvironmentPolicy copy () {
@@ -32,12 +34,14 @@ namespace Atoms {
                 display = display,
                 usb = usb,
                 input = input,
+                audio = audio,
                 host_commands = host_commands,
                 can_network = can_network,
                 can_home = can_home,
                 can_display = can_display,
                 can_usb = can_usb,
                 can_input = can_input,
+                can_audio = can_audio,
                 can_host_commands = can_host_commands
             };
         }
@@ -48,6 +52,7 @@ namespace Atoms {
             display = display && can_display;
             usb = usb && can_usb;
             input = input && can_input;
+            audio = audio && can_audio;
             host_commands = host_commands && can_host_commands;
         }
     }
@@ -150,6 +155,34 @@ namespace Atoms {
             if (memory_bytes < MIB)
                 return "%.0f KiB".printf ((double) memory_bytes / KIB);
             return "%.1f MiB".printf ((double) memory_bytes / MIB);
+        }
+    }
+
+    public class DesktopApplication : Object {
+        public string provider_id { get; construct; }
+        public string id { get; construct; }
+        public string name { get; construct; }
+        public string description { get; construct; }
+        public string icon { get; construct; }
+        public string command { get; construct; }
+        public bool exported { get; set; }
+
+        public DesktopApplication (string provider_id,
+                                   string id,
+                                   string name,
+                                   string description,
+                                   string icon,
+                                   string command,
+                                   bool exported = false) {
+            Object (
+                provider_id: provider_id,
+                id: id,
+                name: name,
+                description: description,
+                icon: icon,
+                command: command,
+                exported: exported
+            );
         }
     }
 }

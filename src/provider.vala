@@ -2,7 +2,7 @@ using Gee;
 
 namespace Atoms {
 
-    public const uint PROVIDER_ABI = 2;
+    public const uint PROVIDER_ABI = 4;
 
     public interface Provider : Object {
         public signal void operation_progress (string message);
@@ -30,11 +30,28 @@ namespace Atoms {
         public abstract string[] shell_argv (
             Environment environment,
             string command,
-            string[] arguments
+            string[] arguments,
+            bool terminal
+        ) throws Error;
+
+        public abstract string[] update_argv (
+            Environment environment
         ) throws Error;
 
         public abstract async Environment update_policy (
             Environment environment,
+            Cancellable? cancellable = null
+        ) throws Error;
+
+        public abstract async ArrayList<DesktopApplication> list_applications (
+            Environment environment,
+            Cancellable? cancellable = null
+        ) throws Error;
+
+        public abstract async void set_application_exported (
+            Environment environment,
+            DesktopApplication application,
+            bool exported,
             Cancellable? cancellable = null
         ) throws Error;
 

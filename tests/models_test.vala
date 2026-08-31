@@ -7,12 +7,14 @@ private void test_policy_clamp () {
         display = true,
         usb = true,
         input = true,
+        audio = true,
         host_commands = true,
         can_network = true,
         can_home = false,
         can_display = true,
         can_usb = false,
         can_input = true,
+        can_audio = false,
         can_host_commands = false
     };
 
@@ -22,6 +24,7 @@ private void test_policy_clamp () {
     assert (policy.display);
     assert (!policy.usb);
     assert (policy.input);
+    assert (!policy.audio);
     assert (!policy.host_commands);
 }
 
@@ -39,6 +42,17 @@ private void test_models () {
     var process = new ProcessInfo (12, "/bin/sh", 1.25, 2 * 1024 * 1024);
     assert (process.cpu_label () == "1.2%");
     assert (process.memory_label () == "2.0 MiB");
+
+    var application = new DesktopApplication (
+        "test",
+        "/usr/share/applications/example.desktop",
+        "Example",
+        "Example application",
+        "example",
+        "/usr/bin/example %U",
+        true
+    );
+    assert (application.exported);
 }
 
 private void test_empty_registry () {
